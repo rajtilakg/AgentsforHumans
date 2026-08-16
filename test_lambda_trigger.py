@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # 1. Load your master .env file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(BASE_DIR, ".env")
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 
 # Initialize S3 and DynamoDB clients
 s3_client = boto3.client(
