@@ -222,7 +222,7 @@
         });
 
         // Handle finishing the quiz and generating the NoSQL JSON file
-        function finishQuiz() {
+    function finishQuiz() {
     quizArea.style.display = 'none';
     successArea.style.display = 'block';
 
@@ -246,7 +246,14 @@
     .catch(error => {
         console.error("Error saving data to server:", error);
     });
+
+    // Redirect to another site after a 2-second delay
+    setTimeout(() => {
+        window.location.href = "http://127.0.0.1:5500/Main.html"; 
+        // Replace with your desired URL (e.g., "dashboard.html" or "https://example.com")
+    }, 2000);
 }
+
         // Function to create and download a local file
         function downloadJSON(dataStr, filename) {
             const blob = new Blob([dataStr], { type: "application/json" });
