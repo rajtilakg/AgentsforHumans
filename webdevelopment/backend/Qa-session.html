@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Q&A | DermaCare</title>
+    <style>
+        :root {
+            --primary-color: #00838f;
+            --primary-light: #e0f7fa;
+            --text-main: #333333;
+            --text-muted: #666666;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fcfcfc;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .qa-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .progress-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .question-box {
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #eeeeee;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #006064;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Success screen styling */
+        .success-message {
+            display: none;
+            color: var(--primary-color);
+        }
+        
+        .success-message h2 {
+            color: var(--primary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="qa-container">
+        <!-- Interactive Q&A Area -->
+        <div id="quiz-area">
+            <div class="progress-text" id="progress">Question 1 of 5</div>
+            
+            <div class="question-box">
+                <h2 id="question-text">Loading question...</h2>
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+
+            <button class="btn" id="next-btn">Next Question</button>
+        </div>
+
+        <!-- Success Area (Hidden until finished) -->
+        <div id="success-area" class="success-message">
+            <h2>✨ All Done!</h2>
+            <p>Your personalized skin profile has been generated.</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
+                *Downloading your NoSQL JSON data file...
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // A pool of questions to choose from randomly
+        const questionPool = [
+            "What is your primary skin concern right now?",
+            "How would you describe your skin type (e.g., oily, dry, combo)?",
+            "Do you experience frequent breakouts or acne?",
+            "What does your current morning skincare routine look like?",
+            "Are you allergic or sensitive to any specific ingredients?",
+            "How often do you apply sunscreen?",
+            "Have you ever consulted a dermatologist before?",
+            "Does your skin tend to get red or irritated easily?",
+            "What are your main goals for your skin?",
+            "How much water do you drink on an average day?"
+        ];
+
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let userData = {}; // This will hold our NoSQL (JSON) structure
+
+        // DOM Elements
+        const questionTextElement = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const nextBtn = document.getElementById('next-btn');
+        const progressText = document.getElementById('progress');
+        const quizArea = document.getElementById('quiz-area');
+        const successArea = document.getElementById('success-area');
+
+        // Function to shuffle an array and pick 5 random questions
+        function initQuiz() {
+            // Shuffle the pool using the Fisher-Yates algorithm
+            let shuffled = questionPool.sort(() => 0.5 - Math.random());
+            selectedQuestions = shuffled.slice(0, 5); // Grab the first 5
+            
+            loadQuestion();
+        }
+
+        // Display the current question
+        function loadQuestion() {
+            progressText.innerText = `Question ${currentQuestionIndex + 1} of 5`;
+            questionTextElement.innerText = selectedQuestions[currentQuestionIndex];
+            answerInput.value = ''; // Clear previous input
+            answerInput.focus();
+
+            // Change button text on the last question
+            if (currentQuestionIndex === 4) {
+                nextBtn.innerText = "Finish & Save Profile";
+            }
+        }
+
+        // Handle the Next button click
+        nextBtn.addEventListener('click', () => {
+            const answer = answerInput.value.trim();
+            
+            if (answer === '') {
+                alert("Please provide an answer before continuing.");
+                return;
+            }
+
+            // Save the answer to our data object using the question as the key
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            userData[currentQuestion] = answer;
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < 5) {
+                // Remove animation class momentarily to trigger it again
+                questionTextElement.style.animation = 'none';
+                setTimeout(() => {
+                    questionTextElement.style.animation = 'fadeIn 0.5s ease-in';
+                    loadQuestion();
+                }, 10);
+            } else {
+                finishQuiz();
+            }
+        });
+
+        // Allow pressing "Enter" to submit answer
+        answerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+
+        // Handle finishing the quiz and generating the NoSQL JSON file
+        function finishQuiz() {
+    quizArea.style.display = 'none';
+    successArea.style.display = 'block';
+
+    const finalDatabaseEntry = {
+        timestamp: new Date().toISOString(),
+        patientAnswers: userData
+    };
+
+    // Make an API request to index.js
+    fetch('/save-answers', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(finalDatabaseEntry)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server response:", data);
+    })
+    .catch(error => {
+        console.error("Error saving data to server:", error);
+    });
+}
+        // Function to create and download a local file
+        function downloadJSON(dataStr, filename) {
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Start the application
+        initQuiz();
+    </script>
+
+</body>
+</html>

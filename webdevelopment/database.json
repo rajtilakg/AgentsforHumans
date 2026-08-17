@@ -1,0 +1,12 @@
+[
+    {
+        "timestamp": "2026-08-17T04:08:11.836Z",
+        "patientAnswers": {
+            "Are you allergic or sensitive to any specific ingredients?": "asd",
+            "How much water do you drink on an average day?": "asd",
+            "Does your skin tend to get red or irritated easily?": "asd",
+            "Do you experience frequent breakouts or acne?": "as",
+            "How often do you apply sunscreen?": "das"
+        }
+    }
+]
