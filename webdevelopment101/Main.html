@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search | DermaCare</title>
+    <style>
+        :root {
+            --primary-color: #00838f;
+            --text-main: #333333;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .search-wrapper {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1a1a1a;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        /* Search Bar Styling */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 5px 15px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 131, 143, 0.1);
+        }
+
+        input[type="text"] {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            font-size: 1.1rem;
+            padding: 15px 10px;
+            background: transparent;
+        }
+
+        /* Buttons and Icons */
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 50%;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        .icon-btn:hover {
+            color: var(--primary-color);
+            background-color: rgba(0, 131, 143, 0.05);
+        }
+
+        #camera-input {
+            display: none; 
+        }
+
+        #status-message {
+            margin-top: 25px;
+            font-weight: 500;
+            color: var(--primary-color);
+            min-height: 24px;
+        }
+
+        /* Live Camera Modal Styles */
+        #live-camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #live-video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 12px;
+            border: 3px solid #ffffff;
+        }
+
+        .modal-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .modal-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .modal-btn.close {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="search-wrapper">
+        <h2>Find Your Product</h2>
+        
+        <div class="search-bar">
+            <!-- 1. Text Search Button -->
+            <button class="icon-btn" onclick="performTextSearch()" title="Search">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+            
+            <input type="text" id="search-input" placeholder="Search by name, ingredient, or brand..." autocomplete="off">
+            
+            <!-- 2. Snapshot Lens Button (Uploads/Snaps a photo file) -->
+            <label for="camera-input" class="icon-btn" title="Search with Photo Lens">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+            </label>
+            <input type="file" id="camera-input" accept="image/*" capture="environment">
+
+            <!-- 3. Live Search Camera Button (Opens continuous video stream) -->
+            <button class="icon-btn" id="live-search-btn" title="Live Camera Search" onclick="startLiveSearch()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 7l-7 5 7 5V7z"></path>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+            </button>
+        </div>
+
+        <div id="status-message"></div>
+    </div>
+
+    <!-- Live Camera Stream Overlay/Modal -->
+    <div id="live-camera-modal">
+        <video id="live-video" autoplay playsinline></video>
+        <div class="modal-controls">
+            <button class="modal-btn" onclick="captureLiveFrame()">Capture & Search</button>
+            <button class="modal-btn close" onclick="stopLiveSearch()">Close Camera</button>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const cameraInput = document.getElementById('camera-input');
+        const statusMessage = document.getElementById('status-message');
+        const liveModal = document.getElementById('live-camera-modal');
+        const liveVideo = document.getElementById('live-video');
+        let mediaStream = null;
+
+        // Text Search
+        function performTextSearch() {
+            const query = searchInput.value.trim();
+            if (query === "") {
+                statusMessage.innerText = "Please enter a search term.";
+                return;
+            }
+            statusMessage.innerText = `Searching database for: "${query}"...`;
+        }
+
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') performTextSearch();
+        });
+
+        // Photo Snapshot Lens
+        cameraInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                searchInput.value = '';
+                statusMessage.innerText = `Analyzing uploaded image: ${file.name}...`;
+            }
+        });
+
+        // --- Live Search Camera Functions ---
+        async function startLiveSearch() {
+            liveModal.style.display = 'flex';
+            statusMessage.innerText = "Initializing live camera feed...";
+            
+            try {
+                // Request access to device camera
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" }, 
+                    audio: false 
+                });
+                liveVideo.srcObject = mediaStream;
+            } catch (error) {
+                console.error("Camera access denied or unavailable:", error);
+                statusMessage.innerText = "Error: Could not access device camera.";
+                stopLiveSearch();
+            }
+        }
+
+        function captureLiveFrame() {
+            // Create an offscreen canvas to capture a frame from the video stream
+            const canvas = document.createElement('canvas');
+            canvas.width = liveVideo.videoWidth;
+            canvas.height = liveVideo.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas frame to an image file/blob
+            canvas.toBlob(blob => {
+                stopLiveSearch();
+                statusMessage.innerText = "Live frame captured! Processing image match...";
+                
+                // You can now send this 'blob' via fetch() to your backend API for product matching
+                console.log("Captured live blob:", blob);
+            }, 'image/jpeg');
+        }
+
+        function stopLiveSearch() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop()); // Turn off camera light/stream
+                mediaStream = null;
+            }
+            liveVideo.srcObject = null;
+            liveModal.style.display = 'none';
+        }
+        
+    </script>
+
+</body>
+</html>

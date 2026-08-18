@@ -1,0 +1,12 @@
+[
+    {
+        "timestamp": "2026-08-15T22:27:21.870Z",
+        "patientAnswers": {
+            "How would you describe your skin type (e.g., oily, dry, combo)?": "oily",
+            "How often do you apply sunscreen?": "daily",
+            "Are you allergic or sensitive to any specific ingredients?": "no",
+            "Have you ever consulted a dermatologist before?": "no",
+            "What is your primary skin concern right now?": "to get a glow"
+        }
+    }
+]

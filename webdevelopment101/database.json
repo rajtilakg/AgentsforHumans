@@ -1,0 +1,32 @@
+[
+    {
+        "timestamp": "2026-08-17T04:08:11.836Z",
+        "patientAnswers": {
+            "Are you allergic or sensitive to any specific ingredients?": "asd",
+            "How much water do you drink on an average day?": "asd",
+            "Does your skin tend to get red or irritated easily?": "asd",
+            "Do you experience frequent breakouts or acne?": "as",
+            "How often do you apply sunscreen?": "das"
+        }
+    },
+    {
+        "timestamp": "2026-08-17T16:34:52.301Z",
+        "patientAnswers": {
+            "How would you describe your skin type (e.g., oily, dry, combo)?": "so like",
+            "What is your primary skin concern right now?": "but like",
+            "Are you allergic or sensitive to any specific ingredients?": "and yet",
+            "How much water do you drink on an average day?": "so and so",
+            "Have you ever consulted a dermatologist before?": "and to add on"
+        }
+    },
+    {
+        "timestamp": "2026-08-18T08:28:04.466Z",
+        "patientAnswers": {
+            "What is your primary skin concern right now?": "as",
+            "What does your current morning skincare routine look like?": "as",
+            "Does your skin tend to get red or irritated easily?": "as",
+            "How much water do you drink on an average day?": "as",
+            "Do you experience frequent breakouts or acne?": "as"
+        }
+    }
+]
