@@ -2,57 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quick Q&A | DermaCare</title>
     <style>
         :root {
             --primary-color: #00838f;
+            --primary-hover: #006064;
             --primary-light: #e0f7fa;
             --text-main: #333333;
             --text-muted: #666666;
+            --success-color: #2e7d32;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #fcfcfc;
+            background: linear-gradient(135deg, #e0f7fa, #fce4ec, #e8f5e9, #fff9c4);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            box-sizing: border-box;
         }
 
+        /* Ambient Glowing Background Orbs */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.65;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            background: rgba(0, 131, 143, 0.3);
+            top: -80px;
+            left: -80px;
+        }
+
+        body::after {
+            background: rgba(233, 30, 99, 0.2);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -6s;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); }
+            100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
+        }
+
+        /* Main Glassmorphic Container */
         .qa-container {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             width: 100%;
             max-width: 600px;
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             text-align: center;
+            box-sizing: border-box;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .qa-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 45px rgba(0, 131, 143, 0.12);
+        }
+
+        /* Logo Styling */
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 25px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--primary-color);
         }
 
         .progress-text {
             color: var(--primary-color);
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 0.9rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         .question-box {
-            min-height: 150px;
+            min-height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
+        /* Text Hover Animation Effect */
+        .hover-text-effect {
+            transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.3s ease;
+            cursor: default;
+        }
+
+        .hover-text-effect:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            text-shadow: 0 4px 15px rgba(0, 131, 143, 0.2);
+        }
+
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             margin-bottom: 25px;
             color: #1a1a1a;
             animation: fadeIn 0.5s ease-in;
@@ -60,21 +148,24 @@
 
         input[type="text"] {
             width: 90%;
-            padding: 15px;
+            padding: 14px 18px;
             font-size: 1rem;
-            border: 2px solid #eeeeee;
-            border-radius: 8px;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             margin-bottom: 30px;
+            color: var(--text-main);
         }
 
         input[type="text"]:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 131, 143, 0.12);
         }
 
         .btn {
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: #ffffff;
             font-size: 1.1rem;
             font-weight: 600;
@@ -82,22 +173,63 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
-            background-color: #006064;
+            background-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 131, 143, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
         }
 
         .btn:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+        }
+
+        /* Animated Notification Popup Banner */
+        .notification-banner {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: #ffffff;
+            border-left: 5px solid var(--primary-color);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .notification-banner.show {
+            transform: translateX(0);
+        }
+
+        .notification-banner span {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -111,17 +243,36 @@
             color: var(--primary-color);
         }
 
+        @media (max-width: 600px) {
+            .qa-container {
+                padding: 25px;
+                margin: 20px;
+            }
+            .notification-banner {
+                left: 20px;
+                right: 20px;
+                top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Notification Toast Element -->
+    <div id="notification" class="notification-banner">
+        <span>🎉 Profile saved successfully! Redirecting...</span>
+    </div>
+
     <div class="qa-container">
+        <!-- Logo Added -->
+        <a href="#" class="logo">Derma<span>Care</span></a>
+
         <!-- Interactive Q&A Area -->
         <div id="quiz-area">
             <div class="progress-text" id="progress">Question 1 of 5</div>
             
             <div class="question-box">
-                <h2 id="question-text">Loading question...</h2>
+                <h2 id="question-text" class="hover-text-effect">Loading question...</h2>
                 <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
             </div>
 
@@ -130,16 +281,15 @@
 
         <!-- Success Area (Hidden until finished) -->
         <div id="success-area" class="success-message">
-            <h2>✨ All Done!</h2>
-            <p>Your personalized skin profile has been generated.</p>
+            <h2 class="hover-text-effect">✨ All Done!</h2>
+            <p class="hover-text-effect">Your personalized skin profile has been generated.</p>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
-                *Downloading your NoSQL JSON data file...
+                *Syncing your data securely...
             </p>
         </div>
     </div>
 
     <script>
-        // A pool of questions to choose from randomly
         const questionPool = [
             "What is your primary skin concern right now?",
             "How would you describe your skin type (e.g., oily, dry, combo)?",
@@ -155,55 +305,49 @@
 
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
-        let userData = {}; // This will hold our NoSQL (JSON) structure
+        let userData = {};
 
-        // DOM Elements
         const questionTextElement = document.getElementById('question-text');
         const answerInput = document.getElementById('answer-input');
         const nextBtn = document.getElementById('next-btn');
         const progressText = document.getElementById('progress');
         const quizArea = document.getElementById('quiz-area');
         const successArea = document.getElementById('success-area');
+        const notification = document.getElementById('notification');
 
-        // Function to shuffle an array and pick 5 random questions
         function initQuiz() {
-            // Shuffle the pool using the Fisher-Yates algorithm
             let shuffled = questionPool.sort(() => 0.5 - Math.random());
-            selectedQuestions = shuffled.slice(0, 5); // Grab the first 5
-            
+            selectedQuestions = shuffled.slice(0, 5);
             loadQuestion();
         }
 
-        // Display the current question
         function loadQuestion() {
             progressText.innerText = `Question ${currentQuestionIndex + 1} of 5`;
             questionTextElement.innerText = selectedQuestions[currentQuestionIndex];
-            answerInput.value = ''; // Clear previous input
+            answerInput.value = '';
             answerInput.focus();
 
-            // Change button text on the last question
             if (currentQuestionIndex === 4) {
                 nextBtn.innerText = "Finish & Save Profile";
             }
         }
 
-        // Handle the Next button click
         nextBtn.addEventListener('click', () => {
             const answer = answerInput.value.trim();
             
             if (answer === '') {
-                alert("Please provide an answer before continuing.");
+                // Subtle inline alert style instead of hard interrupt alert if preferred
+                answerInput.style.borderColor = '#e91e63';
+                setTimeout(() => { answerInput.style.borderColor = '#e0e0e0'; }, 1000);
                 return;
             }
 
-            // Save the answer to our data object using the question as the key
             const currentQuestion = selectedQuestions[currentQuestionIndex];
             userData[currentQuestion] = answer;
 
             currentQuestionIndex++;
 
             if (currentQuestionIndex < 5) {
-                // Remove animation class momentarily to trigger it again
                 questionTextElement.style.animation = 'none';
                 setTimeout(() => {
                     questionTextElement.style.animation = 'fadeIn 0.5s ease-in';
@@ -214,61 +358,45 @@
             }
         });
 
-        // Allow pressing "Enter" to submit answer
         answerInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 nextBtn.click();
             }
         });
 
-        // Handle finishing the quiz and generating the NoSQL JSON file
-    function finishQuiz() {
-    quizArea.style.display = 'none';
-    successArea.style.display = 'block';
+        function finishQuiz() {
+            quizArea.style.display = 'none';
+            successArea.style.display = 'block';
 
-    const finalDatabaseEntry = {
-        timestamp: new Date().toISOString(),
-        patientAnswers: userData
-    };
+            // Trigger the slide-in animation for the notification banner
+            notification.classList.add('show');
 
-    // Make an API request to index.js
-    fetch('/save-answers', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(finalDatabaseEntry)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Server response:", data);
-    })
-    .catch(error => {
-        console.error("Error saving data to server:", error);
-    });
+            const finalDatabaseEntry = {
+                timestamp: new Date().toISOString(),
+                patientAnswers: userData
+            };
 
-    // Redirect to another site after a 2-second delay
-    setTimeout(() => {
-        window.location.href = "http://127.0.0.1:5500/Main.html"; 
-        // Replace with your desired URL (e.g., "dashboard.html" or "https://example.com")
-    }, 2000);
-}
+            fetch('/save-answers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(finalDatabaseEntry)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server response:", data);
+            })
+            .catch(error => {
+                console.error("Error saving data to server:", error);
+            });
 
-        // Function to create and download a local file
-        function downloadJSON(dataStr, filename) {
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Redirect after 2 seconds to allow the user to read the notification banner
+            setTimeout(() => {
+                window.location.href = "\\webdevelopment\\Main.html"; 
+            }, 2000);
         }
 
-        // Start the application
         initQuiz();
     </script>
 
