@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>About Us | DermaCare</title>
+    <style>
+        :root {
+            --primary-color: #00838f;
+            --primary-hover: #006064;
+            --text-main: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0f7fa, #fce4ec, #e8f5e9, #fff9c4);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Enhanced Ambient Glowing Background Orbs */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.65;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            background: rgba(0, 131, 143, 0.3);
+            top: -80px;
+            left: -80px;
+        }
+
+        body::after {
+            background: rgba(233, 30, 99, 0.2);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -6s;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); }
+            100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
+        }
+
+        /* Navigation Header with Hover Accent */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .about-hero {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3rem);
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Text Hover Animation: Glow & Slight Lift */
+        .hover-text-effect {
+            transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.3s ease;
+            cursor: default;
+        }
+
+        .hover-text-effect:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            text-shadow: 0 4px 15px rgba(0, 131, 143, 0.2);
+        }
+
+        .about-hero p {
+            font-size: clamp(1rem, 3vw, 1.15rem);
+            color: #555555;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Content Card Sections */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .info-card:nth-child(1) { animation-delay: 0.2s; }
+        .info-card:nth-child(2) { animation-delay: 0.35s; }
+        .info-card:nth-child(3) { animation-delay: 0.5s; }
+
+        .info-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 131, 143, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .info-card h3 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover h3 {
+            transform: translateX(4px);
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            color: #555555;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Mission Statement Box */
+        .mission-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mission-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 45px rgba(233, 30, 99, 0.12);
+        }
+
+        .mission-box h2 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .mission-box p {
+            font-size: 1.05rem;
+            color: #444444;
+            line-height: 1.7;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            color: #666666;
+            animation: fadeIn 1s ease 0.8s forwards;
+            opacity: 0;
+        }
+
+        /* Keyframes */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 15px 20px; }
+            .mission-box, .info-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="#" class="logo">Derma<span>Care</span></a>
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Search</a>
+            <a href="#" style="color: var(--primary-color);">About Us</a>
+        </nav>
+    </header>
+
+    <!-- Main About Content -->
+    <div class="container">
+        <section class="about-hero">
+            <h1 class="hover-text-effect">Empowering Skin Health Through Intelligence</h1>
+            <p class="hover-text-effect">DermaCare bridges the gap between advanced skin science and daily skincare, helping you discover safe, tailored products built for your unique profile.</p>
+        </section>
+
+        <!-- Feature Cards -->
+        <div class="card-grid">
+            <div class="info-card">
+                <h3>🔍 Smart Intelligence</h3>
+                <p class="hover-text-effect">Our instant text and photo-lens search tools help you break down ingredient lists and identify proper formulations effortlessly.</p>
+            </div>
+            <div class="info-card">
+                <h3>🌿 Clean Science</h3>
+                <p class="hover-text-effect">We believe in transparency. Every recommendation is backed by dermatological insights prioritizing skin safety and efficacy.</p>
+            </div>
+            <div class="info-card">
+                <h3>💡 Personal Approach</h3>
+                <p class="hover-text-effect">Your skin is entirely unique. Our platform is built to cater to individual skincare needs, preferences, and sensitivities.</p>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="mission-box">
+            <h2 class="hover-text-effect">Our Core Mission</h2>
+            <p class="hover-text-effect">To demystify skincare by providing accessible, reliable, and cutting-edge database intelligence. We strive to help everyone make informed, confident choices for healthier and radiant skin every single day.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 DermaCare. All rights reserved.
+    </footer>
+
+</body>
+</html>
