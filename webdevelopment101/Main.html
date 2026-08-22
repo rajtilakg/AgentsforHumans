@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Product Search | DermaCare</title>
+    <title>Product Search | DermaCare Intelligence</title>
     <style>
         :root {
             --primary-color: #00838f;
@@ -22,7 +22,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             min-height: 100vh;
             box-sizing: border-box;
             overflow-x: hidden;
@@ -66,16 +65,27 @@
             100% { transform: translateY(20px) scale(1.1); }
         }
 
-        /* Animated Title Header */
+        /* App Layout Container */
+        .app-container {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+            box-sizing: border-box;
+            gap: 20px;
+        }
+
+        /* Header */
         .header-container {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 10px;
             animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 1;
         }
 
         .animated-title {
-            font-size: clamp(2rem, 8vw, 2.4rem);
+            font-size: clamp(1.8rem, 7vw, 2.2rem);
             font-weight: 800;
             color: #1a1a1a;
             margin: 0;
@@ -102,42 +112,63 @@
         .animated-title span:nth-child(9) { animation-delay: 0.5s; color: var(--primary-color); }
 
         .subtitle {
-            font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
             color: #555555;
-            margin-top: 5px;
+            margin-top: 4px;
             opacity: 0;
             animation: fadeIn 0.8s ease 0.6s forwards;
             font-weight: 500;
         }
 
-        /* Pinned Bottom Search Wrapper Card */
+        /* Dynamic Results Panel View */
+        #results-container {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            overflow-y: auto;
+            max-height: 45vh;
+            display: none; /* Shows up on search execution */
+            box-sizing: border-box;
+            animation: slideUpFade 0.4s ease forwards;
+        }
+
+        .result-card {
+            background: #ffffff;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Sticky Bottom Search Wrapper */
         .search-wrapper {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: 20px;
+            padding: 16px;
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             border: 1px solid rgba(255, 255, 255, 0.6);
             width: 100%;
-            max-width: 650px;
             text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            position: sticky;
+            bottom: 16px;
             box-sizing: border-box;
-            z-index: 1;
-            margin-bottom: 10px;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Search Wrapper Hover State (Card Pops) */
         .search-wrapper:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 22px 45px rgba(0, 131, 143, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 131, 143, 0.15);
         }
 
-        /* Fluid Search Bar */
         .search-bar {
             display: flex;
             align-items: center;
@@ -146,17 +177,13 @@
             border-radius: 50px;
             padding: 4px 10px;
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* Pop Effect Class (Triggered on typing or image action via JS) */
         .search-bar.pop-active, .search-bar:focus-within {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 6px rgba(0, 131, 143, 0.15), 0 10px 25px rgba(0,0,0,0.08);
-            transform: scale(1.02);
-            background: #ffffff;
+            box-shadow: 0 0 0 5px rgba(0, 131, 143, 0.12);
         }
 
         input[type="text"] {
@@ -164,7 +191,7 @@
             outline: none;
             flex-grow: 1;
             font-size: 1rem;
-            padding: 12px 6px;
+            padding: 10px 6px;
             background: transparent;
             color: var(--text-main);
             min-width: 0;
@@ -182,8 +209,6 @@
             border-radius: 50%;
             flex-shrink: 0;
             transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease;
-            position: relative;
-            overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -201,13 +226,11 @@
         }
 
         #status-message {
-            margin-top: 12px;
-            font-size: 0.9rem;
+            margin-top: 8px;
+            font-size: 0.85rem;
             font-weight: 500;
             color: var(--primary-color);
-            min-height: 22px;
-            transition: opacity 0.3s ease;
-            word-break: break-word;
+            min-height: 18px;
         }
 
         /* Live Camera Modal Styles */
@@ -238,17 +261,11 @@
             border-radius: 16px;
             border: 3px solid #ffffff;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         #live-camera-modal.active {
             display: flex;
             opacity: 1;
-        }
-
-        #live-camera-modal.active #live-video {
-            transform: scale(1);
         }
 
         .modal-controls {
@@ -258,7 +275,6 @@
             width: 100%;
             max-width: 400px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         .modal-btn {
@@ -270,30 +286,21 @@
             font-weight: 600;
             border-radius: 25px;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);
-            -webkit-tap-highlight-color: transparent;
             flex: 1;
-            min-width: 130px;
-        }
-
-        .modal-btn:active {
-            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);
         }
 
         .modal-btn.close {
             background: #d32f2f;
-            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
         }
 
-        /* Keyframes */
         @keyframes letterEntrance {
             0% { opacity: 0; transform: translateY(25px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(30px); }
+            0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
@@ -305,60 +312,58 @@
             from { opacity: 0; transform: translateY(-15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes pulseMessage {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulseMessage 0.3s ease;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Animated Title Header -->
-    <div class="header-container">
-        <h1 class="animated-title">
-            <span>D</span><span>e</span><span>r</span><span>m</span><span>a</span><span>C</span><span>a</span><span>r</span><span>e</span>
-        </h1>
-        <div class="subtitle">Advanced Skincare Intelligence</div>
-    </div>
-
-    <!-- Pinned Bottom Search Wrapper -->
-    <div class="search-wrapper">
-        <div class="search-bar" id="search-bar-container">
-            <!-- 1. Text Search Button -->
-            <button class="icon-btn" onclick="performTextSearch()" title="Search">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </button>
-            
-            <input type="text" id="search-input" placeholder="Search name, ingredient..." autocomplete="off">
-            
-            <!-- 2. Snapshot Lens Button -->
-            <label for="camera-input" class="icon-btn" title="Search with Photo Lens">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                    <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-            </label>
-            <input type="file" id="camera-input" accept="image/*" capture="environment">
-
-            <!-- 3. Live Search Camera Button -->
-            <button class="icon-btn" id="live-search-btn" title="Live Camera Search" onclick="startLiveSearch()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M23 7l-7 5 7 5V7z"></path>
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                </svg>
-            </button>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-container">
+            <h1 class="animated-title">
+                <span>D</span><span>e</span><span>r</span><span>m</span><span>a</span><span>C</span><span>a</span><span>r</span><span>e</span>
+            </h1>
+            <div class="subtitle">Advanced Skincare Intelligence powered by Gemini</div>
         </div>
 
-        <div id="status-message"></div>
+        <!-- Scrollable Results Panel (Shows results above the bottom search) -->
+        <div id="results-container">
+            <div class="result-card" id="initial-placeholder">
+                Search for an active ingredient, skin condition, or upload a product snapshot to begin intelligent skincare analysis.
+            </div>
+        </div>
+
+        <!-- Sticky Pinned Bottom Search Wrapper -->
+        <div class="search-wrapper">
+            <div class="search-bar" id="search-bar-container">
+                <!-- 1. Text Search Button -->
+                <button class="icon-btn" onclick="performTextSearch()" title="Search">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                
+                <input type="text" id="search-input" placeholder="Ask follow-up or search ingredient..." autocomplete="off">
+                
+                <!-- 2. Snapshot Lens Button -->
+                <label for="camera-input" class="icon-btn" title="Search with Photo Lens">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </label>
+                <input type="file" id="camera-input" accept="image/*" capture="environment">
+
+                <!-- 3. Live Search Camera Button -->
+                <button class="icon-btn" id="live-search-btn" title="Live Camera Search" onclick="startLiveSearch()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 7l-7 5 7 5V7z"></path>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                </button>
+            </div>
+            <div id="status-message"></div>
+        </div>
     </div>
 
     <!-- Live Camera Stream Overlay/Modal -->
@@ -374,59 +379,89 @@
         const searchInput = document.getElementById('search-input');
         const cameraInput = document.getElementById('camera-input');
         const statusMessage = document.getElementById('status-message');
+        const resultsContainer = document.getElementById('results-container');
         const liveModal = document.getElementById('live-camera-modal');
         const liveVideo = document.getElementById('live-video');
         const searchBarContainer = document.getElementById('search-bar-container');
         let mediaStream = null;
-        let popTimeout = null;
 
-        // Function to trigger a dynamic temporary pop animation on input/uploads
-        function triggerPopEffect() {
+        // Display results block and push data
+        async function displayResult(queryText, responseHTML) {
+            resultsContainer.style.display = 'block';
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `<strong>Q: ${escapeHtml(queryText)}</strong><br>${responseHTML}`;
+            resultsContainer.appendChild(card);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Gemini API Bridge Integration Function
+        async function callGeminiAPI(prompt, imageBase64 = null) {
+            statusMessage.innerText = "Analyzing with Gemini intelligence...";
             searchBarContainer.classList.add('pop-active');
-            clearTimeout(popTimeout);
-            // Keep the pop active briefly if typing continues, then gently settle
-            popTimeout = setTimeout(() => {
-                if (document.activeElement !== searchInput) {
-                    searchBarContainer.classList.remove('pop-active');
-                }
-            }, 1200);
+
+            try {
+                // Replace with your endpoint or GoogleGenAI implementation backend execution
+                // Example structure using Gemini SDK payload specs:
+                /*
+                const ai = new GoogleGenAI({ apiKey: "YOUR_API_KEY" });
+                const contents = imageBase64 ? [
+                    { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
+                    { text: prompt }
+                ] : prompt;
+
+                const response = await ai.models.generateContent({
+                    model: 'gemini-3.7-flash',
+                    contents: contents,
+                    systemInstruction: "You are DermaCare AI, a professional dermatology and skincare assistant."
+                });
+                return response.text;
+                */
+
+                // Simulated response placeholder for frontend presentation loop:
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return `Gemini analysis complete for <em>"${escapeHtml(prompt)}"</em>. This compound works well for boosting skin barrier protection. Feel free to ask a follow-up related topic below!`;
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                return "Sorry, we encountered an issue communicating with the AI service.";
+            } finally {
+                statusMessage.innerText = "";
+                searchBarContainer.classList.remove('pop-active');
+            }
         }
 
-        function triggerPulse() {
-            statusMessage.classList.remove('pulse');
-            void statusMessage.offsetWidth;
-            statusMessage.classList.add('pulse');
-        }
-
-        // Text Search & Typing Pop Listener
-        searchInput.addEventListener('input', function() {
-            triggerPopEffect();
-        });
-
-        function performTextSearch() {
+        async function performTextSearch() {
             const query = searchInput.value.trim();
             if (query === "") {
                 statusMessage.innerText = "Please enter a search term.";
-                triggerPulse();
                 return;
             }
-            statusMessage.innerText = `Searching for: "${query}"...`;
-            triggerPulse();
-            triggerPopEffect();
+            searchInput.value = '';
+            const aiResponse = await callGeminiAPI(query);
+            await displayResult(query, aiResponse);
         }
 
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') performTextSearch();
         });
 
-        // Photo Snapshot Lens (Triggers Pop when file is uploaded)
-        cameraInput.addEventListener('change', function(event) {
+        // Photo Snapshot Lens Upload Handler
+        cameraInput.addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (file) {
-                searchInput.value = '';
-                statusMessage.innerText = `Analyzing: ${file.name}...`;
-                triggerPulse();
-                triggerPopEffect();
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64Data = e.target.result.split(',')[1];
+                    const prompt = "Analyze this skincare product/skin condition image and provide insights.";
+                    const aiResponse = await callGeminiAPI("Photo Analysis: " + file.name, base64Data);
+                    await displayResult("Photo Analysis (" + file.name + ")", aiResponse);
+                };
+                reader.readAsDataURL(file);
             }
         });
 
@@ -434,8 +469,6 @@
         async function startLiveSearch() {
             liveModal.classList.add('active');
             statusMessage.innerText = "Initializing live camera...";
-            triggerPopEffect();
-            
             try {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: "environment" }, 
@@ -443,25 +476,24 @@
                 });
                 liveVideo.srcObject = mediaStream;
             } catch (error) {
-                console.error("Camera access denied or unavailable:", error);
+                console.error("Camera access denied:", error);
                 statusMessage.innerText = "Error: Could not access camera.";
                 stopLiveSearch();
             }
         }
 
-        function captureLiveFrame() {
+        async function captureLiveFrame() {
             const canvas = document.createElement('canvas');
-            canvas.width = liveVideo.videoWidth;
-            canvas.height = liveVideo.videoHeight;
+            canvas.width = liveVideo.videoWidth || 640;
+            canvas.height = liveVideo.videoHeight || 480;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
+            
+            const base64Data = canvas.toDataURL('image/jpeg').split(',')[1];
+            stopLiveSearch();
 
-            canvas.toBlob(blob => {
-                stopLiveSearch();
-                statusMessage.innerText = "Frame captured! Processing match...";
-                triggerPulse();
-                triggerPopEffect();
-            }, 'image/jpeg');
+            const aiResponse = await callGeminiAPI("Live Camera Frame Analysis", base64Data);
+            await displayResult("Live Camera Snapshot", aiResponse);
         }
 
         function stopLiveSearch() {
@@ -471,8 +503,8 @@
             }
             liveVideo.srcObject = null;
             liveModal.classList.remove('active');
+            statusMessage.innerText = "";
         }
     </script>
-
 </body>
 </html>
