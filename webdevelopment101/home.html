@@ -4,143 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dermatology Clinic | Radiant Skin</title>
-    <style>
-        /* Base Styles & Typography */
-        :root {
-            --primary-color: #00838f;
-            --primary-light: #e0f7fa;
-            --text-main: #333333;
-            --text-muted: #666666;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-main);
-            background-color: #fcfcfc;
-        }
-
-        /* Navigation Bar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 8vw;
-            background: #ffffff;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            box-sizing: border-box;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 1px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-main);
-            margin-left: 30px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        /* Hero Section (Using Flexbox for alignment) */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
-            padding: 0 20px;
-        }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulseEffect {
-            0% { box-shadow: 0 0 0 0 rgba(0, 131, 143, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(0, 131, 143, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 131, 143, 0); }
-        }
-
-        /* Hero Content Styling */
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-            animation: fadeUp 1s ease-out forwards;
-        }
-
-        .hero p.subtitle {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 40px;
-            line-height: 1.6;
-            opacity: 0; /* Start hidden for animation */
-            animation: fadeUp 1s ease-out 0.3s forwards;
-        }
-
-        .cta-container {
-            opacity: 0; /* Start hidden for animation */
-            animation: fadeUp 1s ease-out 0.6s forwards;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* The Button */
-        .cta-button {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            font-size: 1.25rem;
-            font-weight: 600;
-            padding: 18px 40px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s;
-            animation: pulseEffect 2s infinite; /* Adds the continuous radar/pulse effect */
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            background-color: #006064;
-            animation: none; /* Stops pulsing when hovering */
-            box-shadow: 0 10px 20px rgba(0, 131, 143, 0.3);
-        }
-
-        .qa-text {
-            margin-top: 15px;
-            font-size: 0.95rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="CSS/home.css">
 </head>
 <body>
 
@@ -151,6 +15,7 @@
             <a href="#">Treatments</a>
             <a href="#" onclick="window.location.href='aboutus.html';">About Us</a>
             <a href="#contact" onclick="window.location.href='contactus/contactus.html';">Contact</a>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle Night/Day Mode">🌙</button>
         </div>
     </nav>
 
@@ -167,25 +32,43 @@
     </header>
 
     <!-- Interactive JavaScript -->
-    <script>
-        // Select the button
+<script>
+        // Q&A Button Loading and Transition Effect
         const qaButton = document.getElementById('qa-button');
 
-        // Add a click event listener
-        qaButton.addEventListener('click', function() {
-            // Visual feedback
+        qaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+
             let originalText = this.innerText;
             this.innerText = "Loading Q&A...";
             this.style.opacity = "0.8";
 
-            // Simulate opening the Q&A session (you would replace this with actual modal/redirect logic)
             setTimeout(() => {
-                alert("This will open your Quick Q&A questionnaire modal or redirect to the Q&A page!");
-                
-                // Reset button
-                this.innerText = originalText;
-                this.style.opacity = "1";
-            }, 600);
+                window.location.href = 'backend/qa-session.html';
+            }, 500);
+        });
+
+        // Night / Day Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Check for saved user preference in localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            htmlElement.setAttribute('data-theme', 'dark');
+            themeToggleBtn.innerText = '☀️';
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            if (htmlElement.getAttribute('data-theme') === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                this.innerText = '🌙';
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                this.innerText = '☀️';
+            }
         });
     </script>
 

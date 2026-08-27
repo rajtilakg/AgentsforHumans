@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quick Q&A | DermaCare</title>
+    <title>Quick Q&A | DermaCare Intelligence</title>
+    
+    <!-- CRITICAL: Apply saved theme instantly before render to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
     <style>
         :root {
             --primary-color: #00838f;
@@ -12,24 +23,52 @@
             --text-main: #333333;
             --text-muted: #666666;
             --success-color: #2e7d32;
+            --bg-gradient: linear-gradient(135deg, #e0f7fa, #fce4ec, #e8f5e9, #fff9c4);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-hover-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.75);
+            --border-color: rgba(255, 255, 255, 0.6);
+            --input-bg: #ffffff;
+            --input-border: #e0e0e0;
+            --orb-1: rgba(0, 131, 143, 0.3);
+            --orb-2: rgba(233, 30, 99, 0.2);
+            --heading-color: #1a1a1a;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4dd0e1;
+            --primary-hover: #26c6da;
+            --primary-light: #16201b;
+            --text-main: #f1f3f2;
+            --text-muted: #adb5bd;
+            --success-color: #81c784;
+            --bg-gradient: linear-gradient(135deg, #0f1719, #1f1118, #111a13, #1f1e0f);
+            --card-bg: rgba(26, 35, 30, 0.9);
+            --card-hover-bg: rgba(30, 42, 36, 0.95);
+            --header-bg: rgba(18, 24, 21, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: #16201b;
+            --input-border: #2c3e35;
+            --orb-1: rgba(77, 208, 225, 0.15);
+            --orb-2: rgba(233, 30, 99, 0.1);
+            --heading-color: #ffffff;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #e0f7fa, #fce4ec, #e8f5e9, #fff9c4);
+            background: var(--bg-gradient);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
             box-sizing: border-box;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
         /* Ambient Glowing Background Orbs */
@@ -43,16 +82,17 @@
             z-index: -1;
             opacity: 0.65;
             animation: floatOrb 12s ease-in-out infinite alternate;
+            transition: background 0.4s ease;
         }
 
         body::before {
-            background: rgba(0, 131, 143, 0.3);
+            background: var(--orb-1);
             top: -80px;
             left: -80px;
         }
 
         body::after {
-            background: rgba(233, 30, 99, 0.2);
+            background: var(--orb-2);
             bottom: -80px;
             right: -80px;
             animation-delay: -6s;
@@ -69,38 +109,28 @@
             100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
         }
 
-        /* Main Glassmorphic Container */
-        .qa-container {
-            background: rgba(255, 255, 255, 0.9);
+        /* Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: var(--header-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            width: 100%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            text-align: center;
-            box-sizing: border-box;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.4s ease, border-color 0.4s ease;
         }
 
-        .qa-container:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 22px 45px rgba(0, 131, 143, 0.12);
-        }
-
-        /* Logo Styling */
         .logo {
-            font-size: 1.6rem;
+            font-size: 1.35rem;
             font-weight: 800;
-            color: #1a1a1a;
+            color: var(--heading-color);
             text-decoration: none;
-            display: inline-block;
-            margin-bottom: 25px;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
         }
 
         .logo:hover {
@@ -109,6 +139,78 @@
 
         .logo span {
             color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button Style */
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: 1rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--primary-color);
+            background: var(--card-hover-bg);
+        }
+
+        /* Content Wrapper Layout */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Main Glassmorphic Container */
+        .qa-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            box-sizing: border-box;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease, border-color 0.4s ease;
+            position: relative;
+        }
+
+        .qa-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 45px rgba(0, 131, 143, 0.12);
         }
 
         .progress-text {
@@ -142,16 +244,17 @@
         h2 {
             font-size: 1.7rem;
             margin-bottom: 25px;
-            color: #1a1a1a;
+            color: var(--heading-color);
             animation: fadeIn 0.5s ease-in;
+            transition: color 0.4s ease;
         }
 
         input[type="text"] {
             width: 90%;
             padding: 14px 18px;
             font-size: 1rem;
-            background: #ffffff;
-            border: 2px solid #e0e0e0;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
             border-radius: 12px;
             outline: none;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -198,19 +301,20 @@
         /* Animated Notification Popup Banner */
         .notification-banner {
             position: fixed;
-            top: 25px;
+            top: 75px;
             right: 25px;
-            background: #ffffff;
+            background: var(--card-bg);
             border-left: 5px solid var(--primary-color);
             padding: 16px 24px;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
             gap: 12px;
             z-index: 1000;
             transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+            border: 1px solid var(--border-color);
         }
 
         .notification-banner.show {
@@ -251,45 +355,78 @@
             .notification-banner {
                 left: 20px;
                 right: 20px;
-                top: 20px;
+                top: 75px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- Navigation Header -->
+    <header>
+        <a href="/webdevelopment101/home.html" class="logo">Derma<span>Care</span></a>
+        <nav class="nav-links">
+            <a href="/webdevelopment101/Main.html">Search</a>
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle Night/Day Mode">🌙</button>
+        </nav>
+    </header>
+
     <!-- Notification Toast Element -->
     <div id="notification" class="notification-banner">
         <span>🎉 Profile saved successfully! Redirecting...</span>
     </div>
 
-    <div class="qa-container">
-        <!-- Logo Added -->
-        <a href="#" class="logo">Derma<span>Care</span></a>
+    <div class="main-content">
+        <div class="qa-container">
+            <!-- Interactive Q&A Area -->
+            <div id="quiz-area">
+                <div class="progress-text" id="progress">Question 1 of 5</div>
+                
+                <div class="question-box">
+                    <h2 id="question-text" class="hover-text-effect">Loading question...</h2>
+                    <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+                </div>
 
-        <!-- Interactive Q&A Area -->
-        <div id="quiz-area">
-            <div class="progress-text" id="progress">Question 1 of 5</div>
-            
-            <div class="question-box">
-                <h2 id="question-text" class="hover-text-effect">Loading question...</h2>
-                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+                <button class="btn" id="next-btn">Next Question</button>
             </div>
 
-            <button class="btn" id="next-btn">Next Question</button>
-        </div>
-
-        <!-- Success Area (Hidden until finished) -->
-        <div id="success-area" class="success-message">
-            <h2 class="hover-text-effect">✨ All Done!</h2>
-            <p class="hover-text-effect">Your personalized skin profile has been generated.</p>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
-                *Syncing your data securely...
-            </p>
+            <!-- Success Area (Hidden until finished) -->
+            <div id="success-area" class="success-message">
+                <h2 class="hover-text-effect">✨ All Done!</h2>
+                <p class="hover-text-effect">Your personalized skin profile has been generated.</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
+                    *Syncing your data securely...
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
+        // Night/Day Theme Toggle Setup & Sync
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Synchronize button icon state on page load based on active theme
+        if (htmlElement.getAttribute('data-theme') === 'dark') {
+            themeToggleBtn.innerText = '☀️';
+        } else {
+            themeToggleBtn.innerText = '🌙';
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            if (htmlElement.getAttribute('data-theme') === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                this.innerText = '🌙';
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                this.innerText = '☀️';
+            }
+        });
+
+        // Quiz Logic
         const questionPool = [
             "What is your primary skin concern right now?",
             "How would you describe your skin type (e.g., oily, dry, combo)?",
@@ -336,9 +473,8 @@
             const answer = answerInput.value.trim();
             
             if (answer === '') {
-                // Subtle inline alert style instead of hard interrupt alert if preferred
                 answerInput.style.borderColor = '#e91e63';
-                setTimeout(() => { answerInput.style.borderColor = '#e0e0e0'; }, 1000);
+                setTimeout(() => { answerInput.style.borderColor = 'var(--input-border)'; }, 1000);
                 return;
             }
 
@@ -368,7 +504,6 @@
             quizArea.style.display = 'none';
             successArea.style.display = 'block';
 
-            // Trigger the slide-in animation for the notification banner
             notification.classList.add('show');
 
             const finalDatabaseEntry = {
@@ -391,7 +526,6 @@
                 console.error("Error saving data to server:", error);
             });
 
-            // Redirect after 2 seconds to allow the user to read the notification banner
             setTimeout(() => {
                 window.location.href = "/webdevelopment101/Main.html"; 
             }, 2000);
