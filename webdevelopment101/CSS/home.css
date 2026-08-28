@@ -1,0 +1,267 @@
+/* ==========================================
+   1. Root Theme Variables (Light Mode Default)
+   ========================================== */
+:root {
+  --primary: #2a4336;          /* Deep Sage Green */
+  --primary-light: #406352;
+  --accent: #d4a373;           /* Warm Gold / Rose Gold */
+  --accent-light: #fbf5ee;     /* Soft Cream background tint */
+  --bg-color: #fcfbf9;         /* Off-white canvas */
+  --surface: #ffffff;          /* Pure white elements */
+  --text-main: #2b2b2b;        /* Dark charcoal */
+  --text-muted: #6c757d;       /* Muted grey */
+  --nav-bg: rgba(252, 251, 249, 0.85);
+  --shadow-sm: 0 4px 15px rgba(42, 67, 54, 0.05);
+  --shadow-md: 0 10px 25px rgba(42, 67, 54, 0.08);
+  --shadow-lg: 0 20px 40px rgba(42, 67, 54, 0.12);
+  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* ==========================================
+   2. Dark Mode Variables
+   ========================================== */
+[data-theme="dark"] {
+  --primary: #74a48a;          /* Lighter sage green for dark mode readability */
+  --primary-light: #94c4aa;
+  --accent: #e5b98a;           /* Brighter warm gold accent */
+  --accent-light: #1f2d26;     /* Deep muted green background tint */
+  --bg-color: #121815;         /* Rich dark gunmetal canvas */
+  --surface: #1a231e;          /* Dark card elements */
+  --text-main: #f1f3f2;        /* Off-white text */
+  --text-muted: #adb5bd;       /* Light muted grey */
+  --nav-bg: rgba(18, 24, 21, 0.85);
+  --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================
+   3. Global Reset & Smooth Transitions
+   ========================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.7;
+  overflow-x: hidden;
+  animation: fadeInPage 0.8s ease-in-out forwards;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   4. Glassmorphism Navigation Bar
+   ========================================== */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 8%;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(212, 163, 115, 0.12);
+  transition: var(--transition);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links a {
+  position: relative;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+/* Animated Underline Effect on Links */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+/* Theme Toggle Button Style */
+.theme-btn {
+  background: var(--surface);
+  border: 1px solid rgba(212, 163, 115, 0.3);
+  color: var(--text-main);
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-btn:hover {
+  transform: scale(1.1) rotate(15deg);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* ==========================================
+   5. High-End Hero Section & Animations
+   ========================================== */
+.hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+  background: radial-gradient(circle at 50% 20%, var(--accent-light) 0%, var(--bg-color) 70%);
+  transition: background 0.4s ease;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  color: var(--primary);
+  line-height: 1.2;
+  margin-bottom: 20px;
+  max-width: 800px;
+  animation: slideDownFade 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.hero .subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin-bottom: 40px;
+  animation: slideDownFade 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   6. CTA Container & Advanced Button Styling
+   ========================================== */
+.cta-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  animation: slideDownFade 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 16px 40px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Shine overlay effect across the button on hover */
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: 0.6s ease;
+  z-index: -1;
+}
+
+.cta-button:hover::before {
+  left: 100%;
+}
+
+.cta-button:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, var(--accent) 0%, #b88654);
+}
+
+.cta-button:active {
+  transform: translateY(-1px);
+}
+
+.qa-text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
