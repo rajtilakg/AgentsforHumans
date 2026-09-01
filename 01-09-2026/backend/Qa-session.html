@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Q&A | DermaCare</title>
+    <style>
+
+        :root {
+            --primary-color: #3b82f6; /* Modern blue */
+            --primary-light: #eff6ff;
+            --text-main: #1f2937; /* Dark gray for light mode text */
+            --text-muted: #6b7280;
+            --bg-color: #f8fafc; /* Very light slate for background */
+            --nav-bg: #ffffff; /* White nav */
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --chat-bubble-user: #3b82f6;
+            --chat-bubble-bot: #ffffff;
+            --chat-border: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #38bdf8; /* Lighter, glowing blue for dark mode */
+            --primary-light: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-color: #0f172a; /* Deep slate background */
+            --nav-bg: #1e293b; /* Slightly lighter slate for nav */
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --chat-bubble-user: #38bdf8;
+            --chat-bubble-bot: #1e293b;
+            --chat-border: #334155;
+        }
+
+        
+
+        
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Nav for Theme Toggle */
+        nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .qa-container {
+            background: var(--nav-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+
+        .progress-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .question-box {
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #eeeeee;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 30px;
+            background: transparent;
+            color: var(--text-main);
+        }
+        
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #006064;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-message {
+            display: none;
+            color: var(--primary-color);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--nav-bg); 
+            padding: 40px; 
+            border-radius: 15px; 
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .modal-content button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <button onclick="toggleTheme()" class="theme-btn" title="Toggle Theme">🌓</button>
+    </nav>
+
+    <div class="qa-container">
+        <!-- Interactive Q&A Area -->
+        <div id="quiz-area">
+            <div class="progress-text" id="progress">Question 1</div>
+            
+            <div class="question-box">
+                <h2 id="question-text">Loading question...</h2>
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+
+            <button class="btn" id="next-btn">Next Question</button>
+        </div>
+
+        <!-- Success Area (Hidden until finished) -->
+        <div id="success-area" class="success-message">
+            <h2 style="color: var(--primary-color);">✨ All Done!</h2>
+            <p>Your personalized skin profile has been generated.</p>
+        </div>
+    </div>
+
+    <!-- DB Check Modal -->
+    <div id="db-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Profile Found</h2>
+            <p>You have already completed the questionnaire.</p>
+            <button class="btn" onclick="document.getElementById('db-modal').style.display='none'; initQuiz();">Retake Profile</button>
+            <button class="btn" onclick="window.location.href='/Main.html'" style="background-color:#555;">Continue to Chat</button>
+        </div>
+    </div>
+
+    <script>
+        // Theme Logic
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+        if (localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+        // Fixed relevant questions for everyone
+        const fixedQuestions = [
+            "What is your primary skin concern right now?",
+            "How would you describe your skin type (e.g., oily, dry, combo)?",
+            "What does your current daily skincare routine look like?"
+        ];
+
+        let currentQuestionIndex = 0;
+        let userData = {};
+
+        // DOM Elements
+        const questionTextElement = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const nextBtn = document.getElementById('next-btn');
+        const progressText = document.getElementById('progress');
+        const quizArea = document.getElementById('quiz-area');
+        const successArea = document.getElementById('success-area');
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check if user already answered
+                const res = await fetch('/api/check-db');
+                const data = await res.json();
+                if (data.hasAnswers) {
+                    document.getElementById('db-modal').style.display = 'flex';
+                } else {
+                    initQuiz();
+                }
+            } catch (err) {
+                initQuiz(); // fallback
+            }
+        });
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            userData = {};
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            progressText.innerText = `Question ${currentQuestionIndex + 1} of ${fixedQuestions.length}`;
+            questionTextElement.innerText = fixedQuestions[currentQuestionIndex];
+            answerInput.value = '';
+            answerInput.focus();
+
+            if (currentQuestionIndex === fixedQuestions.length - 1) {
+                nextBtn.innerText = "Finish & Save Profile";
+            } else {
+                nextBtn.innerText = "Next Question";
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            const answer = answerInput.value.trim();
+            if (answer === '') {
+                alert("Please provide an answer before continuing.");
+                return;
+            }
+
+            userData[fixedQuestions[currentQuestionIndex]] = answer;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < fixedQuestions.length) {
+                questionTextElement.style.animation = 'none';
+                setTimeout(() => {
+                    questionTextElement.style.animation = 'fadeIn 0.5s ease-in';
+                    loadQuestion();
+                }, 10);
+            } else {
+                finishQuiz();
+            }
+        });
+
+        answerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+
+        function finishQuiz() {
+            quizArea.style.display = 'none';
+            successArea.style.display = 'block';
+
+            const finalDatabaseEntry = {
+                timestamp: new Date().toISOString(),
+                patientAnswers: userData
+            };
+
+            fetch('/save-answers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(finalDatabaseEntry)
+            })
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = "/Main.html"; 
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
