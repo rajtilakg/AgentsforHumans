@@ -2,79 +2,273 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Q&A | DermaCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quick Q&A | DermaCare Intelligence</title>
+    
+    <!-- CRITICAL: Apply saved theme instantly before render to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
     <style>
         :root {
             --primary-color: #00838f;
+            --primary-hover: #006064;
             --primary-light: #e0f7fa;
             --text-main: #333333;
             --text-muted: #666666;
+            --success-color: #2e7d32;
+            --bg-gradient: linear-gradient(135deg, #e0f7fa, #fce4ec, #e8f5e9, #fff9c4);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-hover-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.75);
+            --border-color: rgba(255, 255, 255, 0.6);
+            --input-bg: #ffffff;
+            --input-border: #e0e0e0;
+            --orb-1: rgba(0, 131, 143, 0.3);
+            --orb-2: rgba(233, 30, 99, 0.2);
+            --heading-color: #1a1a1a;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4dd0e1;
+            --primary-hover: #26c6da;
+            --primary-light: #16201b;
+            --text-main: #f1f3f2;
+            --text-muted: #adb5bd;
+            --success-color: #81c784;
+            --bg-gradient: linear-gradient(135deg, #0f1719, #1f1118, #111a13, #1f1e0f);
+            --card-bg: rgba(26, 35, 30, 0.9);
+            --card-hover-bg: rgba(30, 42, 36, 0.95);
+            --header-bg: rgba(18, 24, 21, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: #16201b;
+            --input-border: #2c3e35;
+            --orb-1: rgba(77, 208, 225, 0.15);
+            --orb-2: rgba(233, 30, 99, 0.1);
+            --heading-color: #ffffff;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #fcfcfc;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            box-sizing: border-box;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
+        /* Ambient Glowing Background Orbs */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.65;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+            transition: background 0.4s ease;
+        }
+
+        body::before {
+            background: var(--orb-1);
+            top: -80px;
+            left: -80px;
+        }
+
+        body::after {
+            background: var(--orb-2);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -6s;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); }
+            100% { transform: translateY(40px) scale(1.15) rotate(15deg); }
+        }
+
+        /* Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: var(--header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--heading-color);
+            text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button Style */
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: 1rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--primary-color);
+            background: var(--card-hover-bg);
+        }
+
+        /* Content Wrapper Layout */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Main Glassmorphic Container */
         .qa-container {
-            background: #ffffff;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             width: 100%;
             max-width: 600px;
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
             text-align: center;
+            box-sizing: border-box;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease, border-color 0.4s ease;
+            position: relative;
+        }
+
+        .qa-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 45px rgba(0, 131, 143, 0.12);
         }
 
         .progress-text {
             color: var(--primary-color);
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 0.9rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         .question-box {
-            min-height: 150px;
+            min-height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
+        /* Text Hover Animation Effect */
+        .hover-text-effect {
+            transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.3s ease;
+            cursor: default;
+        }
+
+        .hover-text-effect:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            text-shadow: 0 4px 15px rgba(0, 131, 143, 0.2);
+        }
+
         h2 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             margin-bottom: 25px;
-            color: #1a1a1a;
+            color: var(--heading-color);
             animation: fadeIn 0.5s ease-in;
+            transition: color 0.4s ease;
         }
 
         input[type="text"] {
             width: 90%;
-            padding: 15px;
+            padding: 14px 18px;
             font-size: 1rem;
-            border: 2px solid #eeeeee;
-            border-radius: 8px;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             margin-bottom: 30px;
+            color: var(--text-main);
         }
 
         input[type="text"]:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 131, 143, 0.12);
         }
 
         .btn {
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: #ffffff;
             font-size: 1.1rem;
             font-weight: 600;
@@ -82,22 +276,64 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
-            background-color: #006064;
+            background-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 131, 143, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
         }
 
         .btn:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+        }
+
+        /* Animated Notification Popup Banner */
+        .notification-banner {
+            position: fixed;
+            top: 75px;
+            right: 25px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary-color);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .notification-banner.show {
+            transform: translateX(0);
+        }
+
+        .notification-banner span {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -111,35 +347,86 @@
             color: var(--primary-color);
         }
 
+        @media (max-width: 600px) {
+            .qa-container {
+                padding: 25px;
+                margin: 20px;
+            }
+            .notification-banner {
+                left: 20px;
+                right: 20px;
+                top: 75px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="qa-container">
-        <!-- Interactive Q&A Area -->
-        <div id="quiz-area">
-            <div class="progress-text" id="progress">Question 1 of 5</div>
-            
-            <div class="question-box">
-                <h2 id="question-text">Loading question...</h2>
-                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+    <!-- Navigation Header -->
+    <header>
+        <a href="/webdevelopment101/home.html" class="logo">Derma<span>Care</span></a>
+        <nav class="nav-links">
+            <a href="/webdevelopment101/Main.html">Search</a>
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle Night/Day Mode">🌙</button>
+        </nav>
+    </header>
+
+    <!-- Notification Toast Element -->
+    <div id="notification" class="notification-banner">
+        <span>🎉 Profile saved successfully! Redirecting...</span>
+    </div>
+
+    <div class="main-content">
+        <div class="qa-container">
+            <!-- Interactive Q&A Area -->
+            <div id="quiz-area">
+                <div class="progress-text" id="progress">Question 1 of 5</div>
+                
+                <div class="question-box">
+                    <h2 id="question-text" class="hover-text-effect">Loading question...</h2>
+                    <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+                </div>
+
+                <button class="btn" id="next-btn">Next Question</button>
             </div>
 
-            <button class="btn" id="next-btn">Next Question</button>
-        </div>
-
-        <!-- Success Area (Hidden until finished) -->
-        <div id="success-area" class="success-message">
-            <h2>✨ All Done!</h2>
-            <p>Your personalized skin profile has been generated.</p>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
-                *Downloading your NoSQL JSON data file...
-            </p>
+            <!-- Success Area (Hidden until finished) -->
+            <div id="success-area" class="success-message">
+                <h2 class="hover-text-effect">✨ All Done!</h2>
+                <p class="hover-text-effect">Your personalized skin profile has been generated.</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 20px;">
+                    *Syncing your data securely...
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
-        // A pool of questions to choose from randomly
+        // Night/Day Theme Toggle Setup & Sync
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Synchronize button icon state on page load based on active theme
+        if (htmlElement.getAttribute('data-theme') === 'dark') {
+            themeToggleBtn.innerText = '☀️';
+        } else {
+            themeToggleBtn.innerText = '🌙';
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            if (htmlElement.getAttribute('data-theme') === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                this.innerText = '🌙';
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                this.innerText = '☀️';
+            }
+        });
+
+        // Quiz Logic
         const questionPool = [
             "What is your primary skin concern right now?",
             "How would you describe your skin type (e.g., oily, dry, combo)?",
@@ -150,60 +437,53 @@
             "Have you ever consulted a dermatologist before?",
             "Does your skin tend to get red or irritated easily?",
             "What are your main goals for your skin?",
-            "How much water do you drink on an average day?"
+            
         ];
 
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
-        let userData = {}; // This will hold our NoSQL (JSON) structure
+        let userData = {};
 
-        // DOM Elements
         const questionTextElement = document.getElementById('question-text');
         const answerInput = document.getElementById('answer-input');
         const nextBtn = document.getElementById('next-btn');
         const progressText = document.getElementById('progress');
         const quizArea = document.getElementById('quiz-area');
         const successArea = document.getElementById('success-area');
+        const notification = document.getElementById('notification');
 
-        // Function to shuffle an array and pick 5 random questions
         function initQuiz() {
-            // Shuffle the pool using the Fisher-Yates algorithm
             let shuffled = questionPool.sort(() => 0.5 - Math.random());
-            selectedQuestions = shuffled.slice(0, 5); // Grab the first 5
-            
+            selectedQuestions = shuffled.slice(0, 5);
             loadQuestion();
         }
 
-        // Display the current question
         function loadQuestion() {
             progressText.innerText = `Question ${currentQuestionIndex + 1} of 5`;
             questionTextElement.innerText = selectedQuestions[currentQuestionIndex];
-            answerInput.value = ''; // Clear previous input
+            answerInput.value = '';
             answerInput.focus();
 
-            // Change button text on the last question
             if (currentQuestionIndex === 4) {
                 nextBtn.innerText = "Finish & Save Profile";
             }
         }
 
-        // Handle the Next button click
         nextBtn.addEventListener('click', () => {
             const answer = answerInput.value.trim();
             
             if (answer === '') {
-                alert("Please provide an answer before continuing.");
+                answerInput.style.borderColor = '#e91e63';
+                setTimeout(() => { answerInput.style.borderColor = 'var(--input-border)'; }, 1000);
                 return;
             }
 
-            // Save the answer to our data object using the question as the key
             const currentQuestion = selectedQuestions[currentQuestionIndex];
             userData[currentQuestion] = answer;
 
             currentQuestionIndex++;
 
             if (currentQuestionIndex < 5) {
-                // Remove animation class momentarily to trigger it again
                 questionTextElement.style.animation = 'none';
                 setTimeout(() => {
                     questionTextElement.style.animation = 'fadeIn 0.5s ease-in';
@@ -214,60 +494,43 @@
             }
         });
 
-        // Allow pressing "Enter" to submit answer
         answerInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 nextBtn.click();
             }
         });
 
-        // Handle finishing the quiz and generating the NoSQL JSON file
-    function finishQuiz() {
-    quizArea.style.display = 'none';
-    successArea.style.display = 'block';
+        function finishQuiz() {
+            quizArea.style.display = 'none';
+            successArea.style.display = 'block';
 
-    const finalDatabaseEntry = {
-        timestamp: new Date().toISOString(),
-        patientAnswers: userData
-    };
+            notification.classList.add('show');
 
-    // Make an API request to index.js
-    fetch('/save-answers', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(finalDatabaseEntry)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Server response:", data);
-    })
-    .catch(error => {
-        console.error("Error saving data to server:", error);
-    });
+            const finalDatabaseEntry = {
+                timestamp: new Date().toISOString(),
+                patientAnswers: userData
+            };
 
-    // Redirect to another site after a 2-second delay
-    setTimeout(() => {
-        window.location.href = "/Main.html"; 
-    }, 2000);
-}
+            fetch('/save-answers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(finalDatabaseEntry)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server response:", data);
+            })
+            .catch(error => {
+                console.error("Error saving data to server:", error);
+            });
 
-        // Function to create and download a local file
-        function downloadJSON(dataStr, filename) {
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            setTimeout(() => {
+                window.location.href = "/webdevelopment101/Main.html"; 
+            }, 2000);
         }
 
-        // Start the application
         initQuiz();
     </script>
 
