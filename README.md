@@ -452,6 +452,13 @@ free tier for these student projects.
 We do however intend to make this modification once account access is allowed.
 (Though being fully in compliance with the hackathon rules of not making changes 
  once the submission period ends. But this is a design goal)
+
+## **Design Decision: Deterministic Pipeline vs. Autonomous Agent**
+Rather than giving the Strands Agent a "Vision Tool" and letting it autonomously decide when to look at images (the ReAct pattern), our FastAPI orchestrator runs the Vision Agent and Chemistry Agent sequentially. 
+* **Why?** 
+  1. **Strict Safety:** Forces the system to run deterministic PostgreSQL guardrail checks *before* the LLM can generate advice, eliminating the risk of the agent "skipping" a safety check and hallucinating.
+  2. **Latency:** Parallelizing the database fetching and vision extraction before invoking the text agent cuts response times from ~10 seconds down to < 3 seconds.
+  3. **UX:** Allows the frontend to receive real-time, step-by-step streaming status updates (e.g., "🔍 Checking routine...", "🔬 Analyzing ingredients...").
  
 **Agent 1: Vision Extraction Agent**
 - **Model:** Gemini 3.5 Flash Lite (vision capabilities)
