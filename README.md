@@ -457,7 +457,7 @@ We do however intend to make this modification once account access is allowed.
 Rather than giving the Strands Agent a "Vision Tool" and letting it autonomously decide when to look at images (the ReAct pattern), our FastAPI orchestrator runs the Vision Agent and Chemistry Agent sequentially. 
 * **Why?** 
   1. **Strict Safety:** Forces the system to run deterministic PostgreSQL guardrail checks *before* the LLM can generate advice, eliminating the risk of the agent "skipping" a safety check and hallucinating.
-  2. **Latency:** Parallelizing the database fetching and vision extraction before invoking the text agent cuts response times from ~10 seconds down to < 3 seconds.
+  2. **Latency:** Using the database fetching and vision extraction before invoking the text agent allows us to target response time from ~10 seconds down to < 3 seconds.
   3. **UX:** Allows the frontend to receive real-time, step-by-step streaming status updates (e.g., "🔍 Checking routine...", "🔬 Analyzing ingredients...").
  
 **Agent 1: Vision Extraction Agent**
