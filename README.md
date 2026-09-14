@@ -596,8 +596,8 @@ Before setting up DermaCare, ensure you have:
 ### **1. Clone the Repository**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/dermacare.git
-cd dermacare
+git clone https://github.com/rajtilakg/AgentsforHumans.git
+cd "Dermacare - Complete Product/EC2 Instance"
 ```
 
 ### **2. Install Node.js Dependencies**
