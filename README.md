@@ -2166,13 +2166,13 @@ SOFTWARE.
 
 ## 📞 Contact & Support
 
-**Project Repository:** [https://github.com/YOUR_USERNAME/dermacare](https://github.com/YOUR_USERNAME/dermacare)
+**Project Repository:** [https://github.com/rajtilakg/AgentsforHumans](https://github.com/rajtilakg/AgentsforHumans)
 
 **Live Demo:** [https://edermacare.duckdns.org](https://edermacare.duckdns.org)
 
-**Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/dermacare/issues)
+**Issues:** [GitHub Issues](https://github.com/rajtilakg/AgentsforHumans/issues)
 
-**Email:** your.email@example.com
+**Email:** rajtlakgogoi@gmail.com
 
 ---
 
