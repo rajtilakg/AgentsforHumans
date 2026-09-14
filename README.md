@@ -444,6 +444,15 @@ known_allergies = item.get("known_allergies", [])
 
 ### **Agent Pipeline**
 
+Initially Amazon Bedrock was planned to be used with Strands but due to our accounts 
+not clearing the threshold for said level of permissions, we decided to fall back to 
+gemini 3.5 flash lite as we found it capable for our purpose with a generous 
+free tier for these student projects.
+
+We do however intend to make this modification once account access is allowed.
+(Though being fully in compliance with the hackathon rules of not making changes 
+ once the submission period ends. But this is a design goal)
+ 
 **Agent 1: Vision Extraction Agent**
 - **Model:** Gemini 3.5 Flash Lite (vision capabilities)
 - **Input:** Up to 5 product images from S3
@@ -2155,9 +2164,10 @@ SOFTWARE.
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini Team** - For the amazing free tier and vision capabilities
-- **Strands Framework** - For simplifying agentic AI development
-- **AWS** - For comprehensive cloud infrastructure
+-**Devpost Team** - For hosting this hackathon and allowing us this amazing opportunity to learn so much
+- **AWS** - For comprehensive cloud infrastructure and credits to explore this vast world
+- **Strands Framework** - For simplifying agentic AI development and allowing for such projects
+- **Google Gemini Team** - For the amazing very generous free tier and vision capabilities
 - **Sephora/Ulta Beauty** - Ingredient data inspiration
 - **CosDNA** - Reference for ingredient interactions
 - **Agents for Humans Hackathon** - For the opportunity
@@ -2179,6 +2189,7 @@ SOFTWARE.
 ## 🚀 What's Next?
 
 **Planned Features:**
+- [ ] Utilizing Amazon Bedrock as initially planned once aws account clears threshold for said permission level
 - [ ] Routine history tracking with charts
 - [ ] Product expiry notifications
 - [ ] Patch test reminders
