@@ -400,9 +400,12 @@
             if (icon) icon.textContent = '🌙';
         }
 
+        // --- UPDATED QUESTIONNAIRE ARRAY ---
         const fixedQuestions = [
             "What is your primary skin concern right now?",
             "How would you describe your skin type (e.g., oily, dry, combo)?",
+            "What is your local climate like (e.g., tropical, temperate, hot, cold, humid)?",
+            "Do you have any known allergies?",
             "What does your current daily skincare routine look like?"
         ];
 
@@ -447,6 +450,7 @@
             
             questionTextElement.innerText = fixedQuestions[currentQuestionIndex];
             
+            // Show help icon only for the skin type question
             if (currentQuestionIndex === 1) {
                 helpIcon.style.display = 'inline-block';
             } else {

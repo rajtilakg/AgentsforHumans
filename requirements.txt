@@ -1,0 +1,12 @@
+boto3
+psycopg2-binary
+Pillow
+google-genai
+python-dotenv
+strands-agents
+fastapi
+uvicorn
+pydantic
+pandas
+
+# Note: Run "npm install" inside the root directory for Node.js dependencies

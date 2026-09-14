@@ -1,0 +1,1 @@
+test_dynanomodb.py confirms you set it up correctly after you have done that in aws

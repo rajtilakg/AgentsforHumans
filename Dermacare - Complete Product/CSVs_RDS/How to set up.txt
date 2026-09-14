@@ -1,0 +1,5 @@
+include your actual attributes into .env
+run upload_to_rds
+run verify_rds to confirm upload is successful
+test_agent_pipeline.py runs a hackathon simulation on the backend
+(this was before the website was set up)

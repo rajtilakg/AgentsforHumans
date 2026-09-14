@@ -314,6 +314,32 @@
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+        /* Spinner and Disabled State Additions */
+        .thinking-spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .disabled-routine-btn {
+            background: var(--border-color) !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transform: none !important;
+            opacity: 0.7;
+        }
         
         @media (max-width: 768px) {
             .help-popup { width: 95%; max-height: 90vh; }
@@ -351,6 +377,7 @@
             <div id="inline-preview-stack"></div>
 
             <div class="search-bar">
+                <div id="ai-spinner" class="thinking-spinner" title="AI is thinking..."></div>
                 <button class="icon-btn" id="send-btn" onclick="sendMessage()" title="Send">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
@@ -474,6 +501,18 @@
     </div>
 
     <script>
+        // Global Fetch Interceptor for Session Expiration
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const response = await originalFetch.apply(this, args);
+            if (response.status === 401) {
+                alert("⏳ Your session has expired. Please log in again to continue.");
+                window.location.href = '/login';
+                return new Promise(() => {}); 
+            }
+            return response;
+        };
+
         // --- THEME LOGIC ---
         function toggleTheme() {
             const isDark = document.body.getAttribute('data-theme') === 'dark';
@@ -515,6 +554,24 @@
         let transientImageKeys = [];
         let transientImageUrls = [];
         let productContexts = {};
+
+        // Helper to check and enforce the 5-product limit
+        function checkRoutineLimit() {
+            const count = document.querySelectorAll('.sidebar-product').length;
+            const label = document.getElementById('routine-upload-label');
+            const input = document.getElementById('routine-upload-input');
+            
+            if (count >= 5) {
+                label.classList.add('disabled-routine-btn');
+                label.innerText = 'Routine Full (Max 5)';
+                if (input) input.disabled = true;
+            } else {
+                label.classList.remove('disabled-routine-btn');
+                label.innerText = 'Add to Routine';
+                if (input) input.disabled = false;
+            }
+            return count;
+        }
 
         // --- HELP POPUP LOGIC ---
         function openHelp() {
@@ -604,11 +661,7 @@
                     } else {
                         routineStack.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 20px;">No products uploaded yet.</p>';
                     }
-                    if (data.images.length >= 5) {
-                        routineUploadLabel.style.display = 'none';
-                    } else {
-                        routineUploadLabel.style.display = 'block';
-                    }
+                    checkRoutineLimit();
                 }
             } catch (err) {
                 console.error("Failed to load image stack", err);
@@ -633,6 +686,8 @@
         }
 
         async function uploadImageToServer(fileOrBlob, filename = "capture.jpg") {
+            if (checkRoutineLimit() >= 5) return;
+
             const currentImagesCount = document.querySelectorAll('.sidebar-product').length;
             const formData = new FormData();
             formData.append('image', fileOrBlob, filename);
@@ -640,7 +695,6 @@
             const uploadingContainer = appendMessage('bot', `📥 Uploading product to your permanent routine...`);
             const uploadContent = uploadingContainer.querySelector('.msg-content');
 
-            // Optimistic UI
             const reader = new FileReader();
             reader.onload = function(e) {
                 const tempDiv = document.createElement('div');
@@ -655,17 +709,29 @@
                     routineStack.innerHTML = '';
                 }
                 routineStack.appendChild(tempDiv);
+                
+                checkRoutineLimit();
             };
             reader.readAsDataURL(fileOrBlob);
 
             try {
                 const res = await fetch('/upload-image', { method: 'POST', credentials: 'same-origin', body: formData });
-                if (!res.ok) throw new Error('Upload failed');
+                
+                if (!res.ok) {
+                    let errorMsg = "Upload failed.";
+                    if (res.status === 413) errorMsg = "Image is too large. Maximum size is 5MB.";
+                    else {
+                        try {
+                            const errData = await res.json();
+                            errorMsg = errData.message || errorMsg;
+                        } catch(e) {} 
+                    }
+                    throw new Error(errorMsg);
+                }
                 
                 uploadContent.innerHTML = marked.parse("✅ **Product saved to S3!** Waiting for cloud sync...");
                 scrollChatToBottom();
 
-                // Polling for Lambda Sync
                 let attempts = 0;
                 const pollInterval = setInterval(async () => {
                     attempts++;
@@ -689,16 +755,18 @@
 
             } catch (err) {
                 console.error("Upload error:", err);
-                uploadContent.innerHTML = marked.parse("❌ **Error uploading product.** Please check your session and try again.");
+                uploadContent.innerHTML = marked.parse(`❌ **${err.message}**`);
                 const preview = document.querySelector('.uploading-preview');
                 if(preview) preview.remove();
-                if(currentImagesCount === 0) {
+                
+                checkRoutineLimit();
+                
+                if(document.querySelectorAll('.sidebar-product').length === 0) {
                     routineStack.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 20px;">No products uploaded yet.</p>';
                 }
             }
         }
 
-        // --- INLINE CHAT UPLOAD LOGIC (Transient Base64) ---
         if (cameraInput) {
             cameraInput.addEventListener('change', async function(event) {
                 const files = Array.from(event.target.files);
@@ -736,7 +804,6 @@
                     
                     const currentIdx = transientImageKeys.length;
                     
-                    // Optimistic UI for transient images
                     const previewDiv = document.createElement('div');
                     previewDiv.style.position = 'relative'; previewDiv.style.display = 'inline-block';
                     previewDiv.id = `transient-preview-${currentIdx}`;
@@ -754,8 +821,21 @@
                     formData.append('image', file, file.name);
                     formData.append('type', 'transient');
 
-                    try {
+                  try {
                         const res = await fetch('/upload-image', { method: 'POST', credentials: 'same-origin', body: formData });
+                        
+                        if (!res.ok) {
+                            let errorMsg = "Failed to attach image.";
+                            if (res.status === 413) errorMsg = "Image is too large. Maximum size is 5MB.";
+                            else {
+                                try {
+                                    const errData = await res.json();
+                                    errorMsg = errData.message || errorMsg;
+                                } catch(e) {}
+                            }
+                            throw new Error(errorMsg);
+                        }
+
                         const data = await res.json();
                         transientImageKeys[currentIdx] = data.key;
                         
@@ -766,7 +846,7 @@
                         
                     } catch (err) { 
                         console.error("Transient upload failed", err); 
-                        alert("Failed to attach image. Please check your connection."); 
+                        alert(err.message); 
                         previewDiv.remove(); 
                         transientImageKeys[currentIdx] = null;
                         transientImageUrls[currentIdx] = null;
@@ -788,7 +868,6 @@
             document.getElementById('inline-preview-stack').innerHTML = '';
         }
 
-        // --- CHAT LOGIC ---
         window.addEventListener('DOMContentLoaded', () => {
             loadUserImages();
             if (history.length > 0) {
@@ -796,11 +875,20 @@
             } else {
                 appendMessage('bot', "Hi! Upload your daily products to the sidebar, or attach up to 3 photos here to ask me a quick question.");
             }
+            
+            if (sessionStorage.getItem('ai_is_thinking') === 'true') {
+                sessionStorage.removeItem('ai_is_thinking');
+                document.getElementById('ai-spinner').style.display = 'none';
+                
+                const errorMsg = "⚠️ *Previous response was interrupted by page navigation. Please ask your question again.*";
+                appendMessage('bot', errorMsg);
+                history.push({ role: 'bot', text: errorMsg });
+                sessionStorage.setItem('dermaCareHistory', JSON.stringify(history));
+            }
         });
 
         function scrollChatToBottom() { chatLog.scrollTop = chatLog.scrollHeight; }
 
-        // Markdown / Thinking Tags Parser
         function processThinkingTags(text) {
             if (!text) return text;
             
@@ -873,6 +961,9 @@
             chatInput.value = '';
             setBusy(true);
             clearTransientImages();
+            
+            sessionStorage.setItem('ai_is_thinking', 'true');
+            document.getElementById('ai-spinner').style.display = 'block';
 
             const botMsgContainer = appendMessage('bot', ''); 
             const contentDiv = botMsgContainer.querySelector('.msg-content');
@@ -898,9 +989,15 @@
                 }
                 history.push({ role: 'bot', text: fullText });
                 sessionStorage.setItem('dermaCareHistory', JSON.stringify(history));
+                
+                sessionStorage.removeItem('ai_is_thinking');
+                document.getElementById('ai-spinner').style.display = 'none';
             } catch (err) {
                 console.error('Chat request failed:', err);
                 contentDiv.innerHTML = "Could not reach the server. Please check your connection and try again.";
+                
+                sessionStorage.removeItem('ai_is_thinking');
+                document.getElementById('ai-spinner').style.display = 'none';
             }
             setBusy(false);
             chatInput.focus();

@@ -1,0 +1,151 @@
+This is made just to help the judges quickly tests stuff. They are in no way the only way the product can be used or 
+are the only possible tests set or use cases. We have simply arranged for these to allow a quick evaluation.
+Feel free to test the product and use it for your purpose as you require.
+
+Press enter to send your query.
+Upto 3 images can be uploaded into the chat for transient one off query
+Upto 5 images can be uploaded in the routine "permanent" shelf for your skincare products
+
+The Ai remembers your chat for the browser session. Routine products are persistent in your account throughout all sessions.
+The Ai is not rigid. You can input contexts into it in the chat and it will actively update the information form before and 
+offer advice based on that.
+The context button on the routine can be used to help the Ai with more info. Eg. if you're not fully satisfied with the way the AI
+is automatically picking up the information, you can mention the product name or the type to aid it. You can mention how often you use it weekly, 
+and any observations related to it, etc.
+Our vision agent works remarkably well on a wide range of images however it is advised to use a clear image for best results.
+
+ 
+
+
+========================================================================
+DermaCare: AI Agent Evaluation & Testing Instructions
+========================================================================
+
+Welcome to the DermaCare test environment. This guide will walk you
+through evaluating our dual-agent architecture, deterministic PostgreSQL
+chemistry engine, and DynamoDB persistent routine storage. 
+
+Our AI is not rigidly scripted; it dynamically adapts to changing conditions. 
+Whether you retake the skin questionnaire, update usage contexts on your 
+products, or introduce new constraints in the chat, the agent recalculates 
+its advice in real-time while maintaining long-term memory of your shelf.
+
+Please use the provided images in the "Test Set" folder to run these scenarios.
+
+------------------------------------------------------------------------
+TEST 1: Database Persistence & The "Cold Start"
+------------------------------------------------------------------------
+Goal: Test the Vision Agent's extraction and DynamoDB routine storage.
+
+1. Log in and complete the initial skin profile quiz.
+   - Skin goals ? I want clear skin
+   - Select "Oily Skin".
+   - Select "Hot and Humid" Climate.
+   - Add a known allergy: "Vitamin B5".
+   - What's my current routine ? Will be in my routine
+2. On the main dashboard, look at the "My Routine" sidebar on the right.
+3. Click "Add to Routine" and upload the file: `Retinal + Vitamin f + Volufiline.jpg`.
+4. Wait for the upload to complete.
+
+*Architectural Note for Judges:* This initial upload takes a few seconds
+because the Vision Agent is actively running OCR and standardizing the
+chemical INCI names. Once processed, these ingredients are stored in a
+static array in DynamoDB against the user ID. All subsequent chat
+interactions are lightning-fast because the AI skips the vision model
+and reads directly from the database.
+
+------------------------------------------------------------------------
+TEST 2: Extreme Context Injection & Dynamic Adaptation
+------------------------------------------------------------------------
+Goal: Verify the AI synthesizes custom usage constraints and warns 
+against dangerous user habits based on strict chemistry rules.
+
+1. Click the "Context" button next to the uploaded serum loaded with actives.
+2. Type exactly: "use it 5 times a day every day".
+3. Select the "Both" radio button and click Save.
+4. In the main chat bar, type: "Is my routine okay?"
+5. Hit enter.
+6. Verify the Output: The AI will dynamically catch the overuse and warn 
+                      you on the potential harmful effects and suggest 
+                      that you ease into it.
+   
+
+------------------------------------------------------------------------
+TEST 3: Transient Vision & Deterministic Guardrails (Core Feature)
+------------------------------------------------------------------------
+Goal: Test live conflict detection using strict PostgreSQL rules instead
+of probabilistic LLM hallucinations.
+
+1. Click the camera icon in the main chat bar (not the sidebar).
+2. Attach the file: `Salicylic Acid.jpg`.
+3. Type the exact prompt: "Can I safely add this cleanser to my routine?"
+4. Hit Send.
+5. Open the "View Agent Thinking Process" block to watch the pipeline:
+   - The Vision Agent reads the new image (extracting the ingredients even those on the curved surface).
+   - The Orchestrator combines these transient ingredients with your
+     saved routine.
+   - The PostgreSQL database calculates the combined "Barrier Tax" score.
+6. Verify the Output: The AI will strictly flag the cumulative biological 
+   risk of Exfoliation Overload and recommend alternate-day usage, 
+   proving it relies on curated chemistry data, not LLM guesses. It will recommend spacing them
+   appropriately and offer insights into it. + It will also flag the Vitamin B5 allergen.
+
+------------------------------------------------------------------------
+TEST 4: The Out-of-Domain Guardrail
+------------------------------------------------------------------------
+Goal: Ensure the AI refuses to process non-skincare items.
+
+1. Click the camera icon in the chat bar and attach: `Coffee mug_2.jpg`.
+2. Prompt: "Would this make a good moisturizer?"
+3. Verify the Output: The Vision Agent will enforce its safety
+   boundaries, recognizing the lack of an INCI ingredient label and
+   refusing to process the image.
+
+------------------------------------------------------------------------
+TEST 5: Allergy Guardrail (Vitamin B5)
+------------------------------------------------------------------------
+Goal: Verify that a known allergy from the questionnaire actively blocks 
+unsafe product recommendations.
+
+1. Upload `Mositurizer_2.jpg` to "My Routine" via the sidebar.
+2. Ask in the chat: "Is this moisturizer safe for me?"
+3. Open the "Agent Thinking Process".
+4. Verify the Output: The AI will scan the ingredients, identify "Panthenol" 
+   as a form of Vitamin B5, cross-reference it with your profile allergy, 
+   and strictly warn you against using the product.
+
+------------------------------------------------------------------------
+TEST 6: Multi-Product Synergy & Routine Building
+------------------------------------------------------------------------
+Goal: Verify that DermaCare can orchestrate complex, multi-step routines.
+
+1. Add `Niacinamide.jpg` and `Sunscreen(1).jpg` to "My Routine".
+2. Change the context of the retinal serum to: "Use 2x a week, PM".
+
+   # 
+
+3. Ask: "Can you build me a daily AM/PM schedule with my current shelf?"
+4. Verify the Output: The AI dynamically adapts to the new context, 
+   organizing a scientifically sound routine (e.g., placing the SPF in 
+   the AM, the Retinal serum in the PM, and noting the synergy between 
+   them.).
+
+------------------------------------------------------------------------
+TEST 7: Session Independence & Real-Time Prompt Adaptation
+------------------------------------------------------------------------
+Goal: Verify that persistent routine data is maintained across sessions 
+while adapting instantly to in-chat user prompts.
+
+1. In the current chat, type: "I actually just moved to a freezing, dry climate."
+2. Ask: "How should I change my usage of these products?"
+3. Verify that the AI overrides your profile's "Hot and Humid" setting 
+   based on this real-time conversational update, suggesting heavier 
+   moisturization.
+4. Refresh the web page completely (simulating a new session).
+5. Verify the state: The chat history is wiped (including prompted context), but your products, 
+   ingredients, and custom contexts remain perfectly intact in the sidebar, 
+   ready for a new query without needing to re-upload.
+
+========================================================================
+End of Test Suite
+========================================================================

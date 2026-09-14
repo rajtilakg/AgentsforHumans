@@ -1,0 +1,3 @@
+the contents inside lambda_function.py are used in the lambda function in aws
+
+test_lambda_trigger.py confirms it was done correctly.

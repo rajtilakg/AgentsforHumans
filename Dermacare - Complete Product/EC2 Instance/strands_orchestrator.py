@@ -64,7 +64,6 @@ def fetch_user_profile_and_ingredients(user_id: str) -> str:
             "skin_biome": item.get("skin_biome", "unknown"),
             "acute_condition": item.get("acute_condition", "none"),
             "climate_type": item.get("climate_type", "temperate"),
-            # Fixed hardcoded budget
             "budget_usd": item.get("budget_usd", "No limit specified"),
             "known_allergies": item.get("known_allergies", []),
             "current_routine": item.get("current_routine", {}),
@@ -406,12 +405,14 @@ def extract_inline_ingredients(image_keys: list):
             images_data.append(img)
         
         if not images_data:
-            return [], images_data
+            return [], True, "", images_data
 
         prompt = (
-            "Extract EVERY ingredient from the provided product labels into a master list. "
-            "Preserve exact INCI names. Output STRICT JSON only: "
-            "{\"ingredients\": [\"water\", \"niacinamide\"]}"
+            "Analyze the provided image(s). Check if they contain a cosmetic/skincare product or ingredient label. "
+            "If it is a skincare product, extract EVERY ingredient into a list. "
+            "If it is NOT a skincare product (e.g., a coffee mug, food, random object), set 'is_skincare' to false and describe what you see in 'description'. "
+            "Output STRICT JSON only: "
+            "{\"is_skincare\": true, \"description\": \"brief description\", \"ingredients\": [\"water\", \"niacinamide\"]}"
         )
         
         response = genai_client.models.generate_content(
@@ -422,12 +423,15 @@ def extract_inline_ingredients(image_keys: list):
         raw_text = response.text.strip().replace("```json", "").replace("```", "")
         extracted_data = json.loads(raw_text)
         ingredients = extracted_data.get("ingredients", [])
-        print(f"✅ [VISION AGENT] Extracted {len(ingredients)} transient ingredients.")
-        return ingredients, images_data
+        is_skincare = extracted_data.get("is_skincare", True)
+        description = extracted_data.get("description", "Attached image")
+        
+        print(f"✅ [VISION AGENT] Extracted {len(ingredients)} transient ingredients. Skincare: {is_skincare}")
+        return ingredients, is_skincare, description, images_data
         
     except Exception as e:
         print(f"❌ [VISION AGENT] Transient extraction failed: {e}")
-        return [], images_data
+        return [], True, "Failed to parse image", images_data
 
 @app.post("/invoke")
 async def invoke_agent(payload: ChatPayload):
@@ -467,17 +471,23 @@ async def invoke_agent(payload: ChatPayload):
             await asyncio.sleep(0.3)
             
             # 2. Process Transient Images (S3) BEFORE Database lookup
-            contents_list = [f"User says: {payload.message}"]
             transient_ingredients = []
+            transient_is_skincare = True
+            transient_desc = "No attached image"
             
             if payload.inline_image_keys:
                 valid_keys = [k for k in payload.inline_image_keys if k]
                 if valid_keys:
                     yield f"📸 **Extracting ingredients from {len(valid_keys)} attached image(s)...**\n\n"
-                    extracted_transient, loaded_images = await asyncio.to_thread(extract_inline_ingredients, valid_keys)
+                    extracted_transient, is_skincare, desc, _ = await asyncio.to_thread(extract_inline_ingredients, valid_keys)
                     transient_ingredients = extracted_transient
-                    contents_list.extend(loaded_images)
-                    yield "✅ **Attached images processed**\n\n"
+                    transient_is_skincare = is_skincare
+                    transient_desc = desc
+                    
+                    if not is_skincare:
+                        yield f"⚠️ **Guardrail Triggered:** Attached image appears to be: {desc}. Not a skincare product.\n\n"
+                    else:
+                        yield "✅ **Attached images processed**\n\n"
 
             # 3. Combine ingredients for a unified Database lookup
             all_ingredients = routine_ingredients + transient_ingredients
@@ -508,32 +518,34 @@ async def invoke_agent(payload: ChatPayload):
             await asyncio.sleep(0.4)
             yield "---\n\n"
             
-            sys_prompt = (
-                 "You are DermaCare AI, an expert cosmetic skincare consultant.\n\n"
+            # 4. Construct Context for Strands Agent
+            user_prompt = (
+                f"User says: {payload.message}\n\n"
+                "=== INJECTED CONTEXT ===\n"
                 f"USER PROFILE:\n{profile_json}\n\n"
                 "=== INGREDIENT SOURCE BREAKDOWN ===\n"
                 f"1. ROUTINE INGREDIENTS (Permanent products in sidebar): {routine_ingredients}\n"
                 f"2. TRANSIENT INGREDIENTS (Products just attached in chat): {transient_ingredients}\n"
+                f"   - Valid Skincare Product: {transient_is_skincare}\n"
+                f"   - Image Description: {transient_desc}\n"
                 "===================================\n\n"
                 f"DATABASE ANALYSIS (Properties for all combined ingredients):\n{ingredient_analysis}\n\n"
                 f"INGREDIENT INTERACTIONS:\n{interaction_results}\n\n"
                 "Synthesize these findings into a clear, structured assessment following your system instructions. "
-                "CRITICAL: If the user asks to compare an attached product to their routine, explicitly compare the TRANSIENT INGREDIENTS list against the ROUTINE INGREDIENTS list to see if they overlap or conflict. "
-                "Do not rely solely on the text answers in their profile to determine their routine; the ROUTINE INGREDIENTS list represents their actual scanned products."
+                f"CRITICAL: If the user asks about an attached image, and 'Valid Skincare Product' is False, explicitly inform them that the image is a {transient_desc} and enforce your safety guardrails by refusing to treat it as skincare. Do NOT confuse routine ingredients for the attached image."
             )
 
-            response = genai_client.models.generate_content_stream(
-                model='gemini-3.5-flash-lite',
-                contents=contents_list,
-                config={'system_instruction': sys_prompt}
-            )
+            # 5. Route the final generation natively through the Strands Agent
+            final_response = await asyncio.to_thread(skincare_agent, user_prompt)
             
-            for chunk in response:
-                if chunk.text:
-                    words = chunk.text.split(' ')
-                    for i, word in enumerate(words):
-                        yield word + (" " if i < len(words)-1 else "")
-                        await asyncio.sleep(0.03) 
+            # Parse the agent response string
+            response_text = str(final_response)
+            
+            # Replicate your frontend chunked streaming behavior for the final synthesized text
+            words = response_text.split(' ')
+            for i, word in enumerate(words):
+                yield word + (" " if i < len(words)-1 else "")
+                await asyncio.sleep(0.03) 
                         
         except Exception as e:
             yield f"Error generating response: {str(e)}"

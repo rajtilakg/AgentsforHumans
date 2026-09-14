@@ -1,0 +1,3 @@
+These images are provided to assist judges in testing our product.
+
+All images included here were captured by us and are our property. We grant anyone using these images for the purpose of testing and evaluating our system permission to use them freely for that purpose.

@@ -1,0 +1,1 @@
+test_s3_upload.py tests the s3 was set up correctly in aws

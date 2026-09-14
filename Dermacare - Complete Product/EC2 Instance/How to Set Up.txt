@@ -1,0 +1,11 @@
+install the npm dependencies
+
+install pm2
+
+activate python virtual environment source venv/bin/activate with all the necessary dependencies
+
+on this directory, run pm2 start server.js --name=frontend
+pm2 start strands_orchestrator.py --name=strands
+
+pm2 save
+

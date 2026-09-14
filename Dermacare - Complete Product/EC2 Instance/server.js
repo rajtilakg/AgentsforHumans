@@ -44,29 +44,18 @@ app.use(cors({
 // ============================================================================
 // RATE LIMITING CONFIGURATION
 // ============================================================================
-// Designed to align with Gemini API free tier limits:
-// - 15 requests/minute (RPM)
-// - 250K tokens/minute (TPM)
-// - 500 requests/day (RPD)
-//
-// User limits are set generously for demo/judging purposes while showing
-// production-ready rate limiting implementation.
-// ============================================================================
-
-// General API rate limiter - applies to most endpoints
 const generalLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 50, // 50 requests per minute per user
+  windowMs: 1 * 60 * 1000, 
+  max: 50, 
   message: {
     status: 'error',
     message: 'Too many requests. Please wait a moment and try again.',
     retryAfter: '1 minute'
   },
-  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
-  legacyHeaders: false, // Disable `X-RateLimit-*` headers
-  // Use user ID from JWT for per-user rate limiting
+  standardHeaders: true, 
+  legacyHeaders: false, 
   keyGenerator: (req) => {
-    return req.user?.sub || req.ip; // Fallback to IP if not authenticated
+    return req.user?.sub || req.ip; 
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -78,10 +67,9 @@ const generalLimiter = rateLimit({
   }
 });
 
-// Strict limiter for AI chat endpoint (most expensive operation)
 const chatLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // 10 chat requests per minute (aligns with 15 RPM Gemini limit)
+  windowMs: 1 * 60 * 1000, 
+  max: 10, 
   message: {
     status: 'error',
     message: 'Chat rate limit exceeded. Please wait before sending another message.',
@@ -97,11 +85,10 @@ const chatLimiter = rateLimit({
   }
 });
 
-// Daily limiter for expensive operations
 const dailyLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 400, // 400 requests per day (well under 500 RPD Gemini limit)
-  skipFailedRequests: true, // Don't count failed requests
+  windowMs: 24 * 60 * 60 * 1000, 
+  max: 400, 
+  skipFailedRequests: true, 
   keyGenerator: (req) => req.user?.sub || req.ip,
   handler: (req, res) => {
     res.status(429).json({
@@ -113,10 +100,9 @@ const dailyLimiter = rateLimit({
   }
 });
 
-// Image upload limiter (prevent storage abuse)
 const uploadLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 20, // 20 uploads per minute (very generous for demo)
+  windowMs: 1 * 60 * 1000, 
+  max: 20, 
   keyGenerator: (req) => req.user?.sub || req.ip,
   handler: (req, res) => {
     res.status(429).json({
@@ -136,14 +122,22 @@ const jwtVerifier = CognitoJwtVerifier.create({
 
 const requireAuth = async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
-  if (!accessToken) return res.status(401).send('Session expired or missing token. Please <a href="/login">log in</a>.');
+  
+  const handleUnauthorized = () => {
+    if (req.method === 'POST' || req.path.startsWith('/api/') || (req.headers.accept && req.headers.accept.includes('json'))) {
+      return res.status(401).json({ status: 'error', message: 'Session expired.' });
+    }
+    return res.redirect('/login');
+  };
+
+  if (!accessToken) return handleUnauthorized();
 
   try {
     const payload = await jwtVerifier.verify(accessToken);
     req.user = payload;
     next();
   } catch (err) {
-    return res.status(401).send('Invalid token. <a href="/login">Login again</a>');
+    return handleUnauthorized();
   }
 };
 
@@ -164,7 +158,6 @@ app.get('/treatments', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-// Removed insecure backend static route
 
 
 app.get('/privacy', (req, res) => {
@@ -214,7 +207,6 @@ app.get('/auth/callback', async (req, res) => {
   }
 });
 
-// NEW DB CHECK ROUTE
 app.get('/api/check-db', requireAuth, async (req, res) => {
     try {
         const command = new GetCommand({
@@ -258,7 +250,6 @@ app.post('/upload-image', requireAuth, uploadLimiter, upload.single('image'), as
   }
 
   const userId = req.user.sub;
-  // Route to transient folder if requested, otherwise default to uploads/
   const folder = req.body.type === 'transient' ? 'transient' : 'uploads';
   const fileName = `${folder}/${userId}/${Date.now()}-${req.file.originalname || 'image.jpg'}`;
 
@@ -306,7 +297,7 @@ app.post('/remove-image', requireAuth, generalLimiter, async (req, res) => {
     const updateCmd = new UpdateCommand({
       TableName: process.env.DYNAMODB_TABLE || 'UserSkinProfiles',
       Key: { user_id: userId },
-      UpdateExpression: "SET scanned_images = :imgs, product_contexts = :ctx",
+      UpdateExpression: "SET scanned_images = :imgs, product_contexts = :ctx REMOVE latest_scanned_ingredients, processed_images_cache",
       ExpressionAttributeValues: { ":imgs": images, ":ctx": contexts }
     });
     await docClient.send(updateCmd);
@@ -379,7 +370,6 @@ app.post('/save-context', requireAuth, generalLimiter, async (req, res) => {
   }
 });
 
-// UPDATED CHAT ROUTE FOR STREAMING
 app.post('/chat', requireAuth, chatLimiter, dailyLimiter, async (req, res) => {
   const { message, history, inline_image_keys } = req.body;
   const realUserId = req.user.sub; 
@@ -388,12 +378,11 @@ app.post('/chat', requireAuth, chatLimiter, dailyLimiter, async (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Message is required.' });
   }
 
-  // Set headers to disable all network buffering
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Transfer-Encoding', 'chunked');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no'); // Crucial for AWS/Nginx
+  res.setHeader('X-Accel-Buffering', 'no'); 
 
   try {
     await callGeminiAgent(
@@ -401,9 +390,8 @@ app.post('/chat', requireAuth, chatLimiter, dailyLimiter, async (req, res) => {
       Array.isArray(history) ? history : [], 
       realUserId,
       inline_image_keys || [],
-      res // Pass Express response object to gemini.js
+      res 
     );
-    // Note: res.end() is handled inside callGeminiAgent
   } catch (err) {
     console.error('Chat endpoint error:', err);
     if (!res.headersSent) {
@@ -415,7 +403,6 @@ app.post('/chat', requireAuth, chatLimiter, dailyLimiter, async (req, res) => {
   }
 });
 
-// Auth Status Check for Dynamic Navbar
 app.get('/api/auth-status', async (req, res) => {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) return res.json({ isAuthenticated: false });
