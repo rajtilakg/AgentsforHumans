@@ -1,3 +1,4 @@
+put the ec2 instance stuff in a server
 install the npm dependencies
 
 install pm2
@@ -9,3 +10,4 @@ pm2 start strands_orchestrator.py --name=strands
 
 pm2 save
 
+check pm2 logs for debugging in case of errors
