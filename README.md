@@ -455,7 +455,10 @@ We do however intend to make this modification once account access is allowed.
 
 **Design Decision: Deterministic Pipeline vs. Autonomous Agent**
 
-Rather than giving the Strands Agent a "Vision Tool" and letting it autonomously decide when to look at images (the ReAct pattern), our FastAPI orchestrator runs the Vision Agent and Chemistry Agent sequentially. 
+Rather than giving the Strands Agent a "Vision Tool" and letting it autonomously decide when to look at 
+images (the ReAct pattern), our FastAPI backend runs the Vision Agent first, and then the Strands SDK 
+orchestrates the Chemistry Agent sequentially.
+
 * **Why?** 
   1. **Strict Safety:** Forces the system to run deterministic PostgreSQL guardrail checks *before* the LLM can generate advice, eliminating the risk of the agent "skipping" a safety check and hallucinating.
   2. **Latency:** An autonomous agent requires network calls and token generation just to decide if it needs to use a tool. By offloading this routing logic to a native Python if/else statement, we evaluate our image cache in microseconds. As a result, routine images are only processed when the shelf changes while every subsequent message bypasses the vision agent entirely and routes straight to the chemistry engine in under 3 seconds.
@@ -2187,8 +2190,8 @@ SOFTWARE.
 ## 🙏 Acknowledgments
 
 -**Devpost Team** - For hosting this hackathon and allowing us this amazing opportunity to learn so much
-- **AWS** - For comprehensive cloud infrastructure and credits to explore this vast world
 - **Strands Framework** - For simplifying agentic AI development and allowing for such projects
+- **AWS** - For comprehensive cloud infrastructure and credits to explore this vast world
 - **Google Gemini Team** - For the amazing very generous free tier and vision capabilities
 - **Sephora/Ulta Beauty** - Ingredient data inspiration
 - **CosDNA** - Reference for ingredient interactions
