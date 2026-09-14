@@ -454,10 +454,11 @@ We do however intend to make this modification once account access is allowed.
  once the submission period ends until the end of evaluation and winner declaration. But this is a design goal)
 
 **Design Decision: Deterministic Pipeline vs. Autonomous Agent**
+
 Rather than giving the Strands Agent a "Vision Tool" and letting it autonomously decide when to look at images (the ReAct pattern), our FastAPI orchestrator runs the Vision Agent and Chemistry Agent sequentially. 
 * **Why?** 
   1. **Strict Safety:** Forces the system to run deterministic PostgreSQL guardrail checks *before* the LLM can generate advice, eliminating the risk of the agent "skipping" a safety check and hallucinating.
-  2. **Latency:** Using the database fetching and vision extraction before invoking the text agent allows us to target response time from ~10 seconds down to < 3 seconds.
+  2. **Latency:** An autonomous agent requires network calls and token generation just to decide if it needs to use a tool. By offloading this routing logic to a native Python if/else statement, we evaluate our image cache in microseconds. As a result, routine images are only processed when the shelf changes while every subsequent message bypasses the vision agent entirely and routes straight to the chemistry engine in under 3 seconds.
   3. **UX:** Allows the frontend to receive real-time, step-by-step streaming status updates (e.g., "🔍 Checking routine...", "🔬 Analyzing ingredients...").
  
 **Agent 1: Vision Extraction Agent**
