@@ -1,6 +1,6 @@
 This is made just to help the judges quickly tests stuff. They are in no way the only way the product can be used or 
 are the only possible tests set or use cases. We have simply arranged for these to allow a quick evaluation.
-Feel free to test the product and use it for your purpose as you require.
+Feel free to test the product and use it for your purpose as you require. Your interest in our product will make us truly happy. 
 
 Press enter to send your query.
 Upto 3 images can be uploaded into the chat for transient one off query
@@ -14,8 +14,8 @@ is automatically picking up the information, you can mention the product name or
 and any observations related to it, etc.
 Our vision agent works remarkably well on a wide range of images however it is advised to use a clear image for best results.
 
- 
-
+The actual number of database queries can be less than the total number of individual ingredients as duplicates are queried only once
+for all the products in question.
 
 ========================================================================
 DermaCare: AI Agent Evaluation & Testing Instructions
