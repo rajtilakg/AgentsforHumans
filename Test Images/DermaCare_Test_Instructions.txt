@@ -107,7 +107,7 @@ TEST 5: Allergy Guardrail (Vitamin B5)
 Goal: Verify that a known allergy from the questionnaire actively blocks 
 unsafe product recommendations.
 
-1. Upload `Mositurizer_2.jpg` to "My Routine" via the sidebar.
+1. Upload `Moisturizer_2.jpg` to "My Routine" via the sidebar.
 2. Ask in the chat: "Is this moisturizer safe for me?"
 3. Open the "Agent Thinking Process".
 4. Verify the Output: The AI will scan the ingredients, identify "Panthenol" 
