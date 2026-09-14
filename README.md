@@ -36,7 +36,7 @@
 
 ## 🌟 Overview
 
-**DermaCare** is an intelligent skincare assistant that analyzes product ingredients, detects harmful interactions, and provides personalized recommendations. Built for the **Agents for Humans Hackathon 2026**, it demonstrates how AI agents can make complex chemistry accessible to everyday users.
+**DermaCare** is an intelligent, multimodal, agentic skincare assistant that analyzes product ingredients, detects harmful interactions, and provides personalized recommendations. Built for the **Agents for Humans Hackathon** 2026, it uses the **Strands** agentic framework to orchestrate its AI agents — demonstrating how they can make complex chemistry accessible to everyday users.
 
 ### **The Problem**
 - 70% of people use skincare products with conflicting ingredients (retinol + AHA, vitamin C + niacinamide in wrong pH)
