@@ -593,6 +593,20 @@ Before setting up DermaCare, ensure you have:
 
 ## 🚀 Quick Start Setup
 
+### A Note on Repository Structure
+
+The finished project lives in `Dermacare - Complete Product`.
+
+`Development Stage - Old (To showcase development steps)` is included to show 
+our development activity throughout the hackathon and how we arrived at the 
+final product.
+
+Most of the development happened locally on my own machine so I pushed the 
+finished product to this repo but chose to keep the older development stages 
+rather than remove them.
+
+— rajtilakg
+
 ### **1. Clone the Repository**
 
 ```bash
