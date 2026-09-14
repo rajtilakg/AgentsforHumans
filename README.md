@@ -66,7 +66,12 @@ DermaCare uses **dual AI agents** (Vision + Chemistry) to:
 
 ### **Test Account Credentials**
 ```
+Account 1:
 Username: testadmin1
+Password: Password@1
+
+Account 2:
+Username: testadmin2
 Password: Password@1
 ```
 
