@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | DermaCare</title>
+    <style>
+
+        :root {
+            --primary-color: #2c4c3b;
+            --primary-light: #eef5f0;
+            --primary-text-on-btn: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #fbfdfc;
+            --nav-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --chat-bubble-user: #e3f0e8;
+            --chat-text-user: #1f3b2b; 
+            --chat-bubble-bot: #ffffff;
+            --chat-border: #e2e8f0;
+            --glow-color: rgba(44, 76, 59, 0.4);
+            --glow-color-zero: rgba(44, 76, 59, 0);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #8ebfa5;
+            --primary-light: #1a2e24;
+            --primary-text-on-btn: #111814;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-color: #111814;
+            --nav-bg: #16201b; 
+            --card-bg: #16201b;
+            --border-color: #2d3d35;
+            --chat-bubble-user: #1e362a;
+            --chat-text-user: #ffffff; 
+            --chat-bubble-bot: #16201b;
+            --chat-border: #2d3d35;
+            --glow-color: rgba(142, 191, 165, 0.4);
+            --glow-color-zero: rgba(142, 191, 165, 0);
+        }
+
+        
+
+        
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8vw;
+            background: var(--nav-bg);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); letter-spacing: 1px; text-decoration: none; }
+        
+        
+        
+        
+        main { max-width: 800px; margin: 0 auto; padding: 140px 20px 80px; }
+        h1 { font-size: 2.4rem; color: var(--primary-color); margin-bottom: 10px; }
+        h2 { font-size: 1.4rem; color: var(--primary-color); margin-top: 30px; margin-bottom: 10px; }
+        p, li { line-height: 1.7; color: var(--text-main); }
+        .lede { font-size: 1.15rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 40px; }
+    
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-main); margin-left: 30px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-color); }
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            margin-left: 20px;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .theme-btn:hover { background: var(--border-color); }
+        #themeIcon { transition: transform 0.5s ease; font-size: 1.2rem; line-height: 1; }
+
+
+        /* Universal Mobile Nav Fixes */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                padding: 15px 5vw;
+                position: relative !important; /* Stop navbar from covering content */
+                gap: 15px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+                width: 100%;
+                margin-top: 10px;
+            }
+            .nav-links a { margin-left: 0 !important; font-size: 0.95rem; }
+            .theme-btn { margin-left: 0 !important; }
+            main { padding-top: 40px !important; }
+            .page-content { margin-top: 20px !important; height: auto !important; }
+            .qa-container { margin-top: 40px !important; }
+        }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGViZmE1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTExIDIwQTcgNyAwIDAgMSA5LjggNi4xQzE1LjUgNSAxNyA0LjQ4IDE5IDJjMSAyIDIgNC4xOCAyIDggMCA1LjUtNC43OCAxMC0xMCAxMFoiPjwvcGF0aD48cGF0aCBkPSJNMiAyMWMwLTMgMS44NS01LjM2IDUuMDgtNkM5LjUgMTQuNTIgMTIgMTMgMTMgMTIiPjwvcGF0aD48L3N2Zz4=">
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo" style="display: flex; align-items: center; text-decoration: none;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            DermaCare.
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/treatments">Skin Goals</a>
+            <a href="/about">About Us</a>
+            <a href="/login" style="font-weight: 700; color: var(--primary-color);">Login / Sign Up</a>
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-btn" title="Toggle Theme"><span id="themeIcon">🌙</span></button>
+        </div>
+    </nav>
+
+    <main style="opacity: 0; animation: fadeUp 0.6s ease-out forwards;">
+
+        <h1>Terms of Service</h1>
+        <p class="lede">Last Updated: September 2, 2026</p>
+        <p>These Terms of Service ("Terms") govern your access to and use of DermaCare (the "Service"). By creating an account, uploading content, or otherwise using the Service, you agree to be bound by these Terms.</p>
+
+        <h2>1. Eligibility</h2>
+        <p>You must be at least 18 years old to use the Service. If you are between 13 and 18, you may only use the Service with the involvement and consent of a parent or legal guardian. The Service is not directed at children under 13.</p>
+
+        <h2>2. NOT MEDICAL OR PROFESSIONAL ADVICE</h2>
+        <p><strong>DermaCare provides cosmetic skincare suggestions for informational purposes only and is not a substitute for professional dermatological or medical advice. Consult a licensed dermatologist for any skin condition.</strong></p>
+        <p>THE SERVICE IS PROVIDED FOR GENERAL INFORMATIONAL AND CONVENIENCE PURPOSES ONLY. THE SERVICE DOES NOT PROVIDE MEDICAL, DERMATOLOGICAL, OR HEALTHCARE ADVICE, DIAGNOSIS, OR TREATMENT. You should independently verify all ingredient information and ALWAYS read the actual product label, perform a patch test, and consult a licensed dermatologist or physician before use.</p>
+
+        <h2>3. User Content and Uploads</h2>
+        <p>You retain ownership of your User Content. You grant us a non-exclusive license to process your User Content solely to operate the Service. You are strictly prohibited from uploading NSFW, explicit, or medically graphic images of severe skin infections.</p>
+
+        <h2>4. Artificial Intelligence Features</h2>
+        <p>The Service uses third-party AI models. These models may generate inaccurate, biased, incomplete, or unexpected results ("hallucinations"). We do not guarantee the accuracy, completeness, or reliability of any AI-generated output.</p>
+
+        <h2>5. Limitation of Liability</h2>
+        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL WE BE LIABLE FOR ANY INDIRECT OR CONSEQUENTIAL DAMAGES. We specifically disclaim liability if the AI erroneously recommends unsafe or chemically reactive ingredient combinations. OUR TOTAL AGGREGATE LIABILITY WILL NOT EXCEED THE GREATER OF THE AMOUNT YOU PAID US IN THE PRECEDING TWELVE (12) MONTHS, OR FIFTY U.S. DOLLARS ($50).</p>
+
+        <h2>6. Governing Law and Dispute Resolution</h2>
+        <p>These Terms are governed by the laws of India, without regard to conflict-of-law principles. Any dispute arising out of or relating to these Terms or the Service will be resolved exclusively in the Indian courts, and you consent to personal jurisdiction there.</p>
+
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const icon = document.getElementById('themeIcon');
+            icon.style.transform = 'rotate(180deg) scale(0)';
+            setTimeout(() => {
+                document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                icon.textContent = isDark ? '🌙' : '☀️';
+                icon.style.transform = 'rotate(360deg) scale(1)';
+            }, 250);
+            setTimeout(() => {
+                icon.style.transition = 'none';
+                icon.style.transform = 'rotate(0deg) scale(1)';
+                void icon.offsetWidth;
+                icon.style.transition = 'transform 0.5s ease';
+            }, 500);
+        }
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.textContent = '☀️';
+        }
+    </script>
+
+    <script>
+        // Dynamic Auth Navigation & CTA Routing
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/auth-status');
+                const data = await res.json();
+                
+                if (data.isAuthenticated) {
+                    // 1. Swap Navbar Links
+                    const loginLink = document.querySelector('a[href="/login"]');
+                    if (loginLink) {
+                        const navContainer = loginLink.parentElement;
+                        
+                        const chatLink = document.createElement('a');
+                        chatLink.href = '/chat';
+                        chatLink.textContent = 'Chat';
+                        chatLink.style.fontWeight = '700';
+                        chatLink.style.color = 'var(--primary-color)';
+                        
+                        const logoutLink = document.createElement('a');
+                        logoutLink.href = '/logout';
+                        logoutLink.textContent = 'Logout';
+                        
+                        // Insert new links and remove the old login link
+                        navContainer.insertBefore(chatLink, loginLink);
+                        navContainer.insertBefore(logoutLink, loginLink);
+                        loginLink.remove();
+                    }
+                }
+            } catch (err) {
+                console.error("Auth check failed:", err);
+            }
+        });
+    </script>
+
+</body>
+</html>

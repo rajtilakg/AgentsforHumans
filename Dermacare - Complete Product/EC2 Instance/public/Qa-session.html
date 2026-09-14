@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Q&A | DermaCare</title>
+    <style>
+        :root {
+            --primary-color: #2c4c3b;
+            --primary-light: #eef5f0;
+            --primary-text-on-btn: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #fbfdfc;
+            --nav-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --chat-bubble-user: #e3f0e8;
+            --chat-text-user: #1f3b2b; 
+            --chat-bubble-bot: #ffffff;
+            --chat-border: #e2e8f0;
+            --glow-color: rgba(44, 76, 59, 0.4);
+            --glow-color-zero: rgba(44, 76, 59, 0);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #8ebfa5;
+            --primary-light: #1a2e24;
+            --primary-text-on-btn: #111814;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-color: #111814;
+            --nav-bg: #16201b; 
+            --card-bg: #16201b;
+            --border-color: #2d3d35;
+            --chat-bubble-user: #1e362a;
+            --chat-text-user: #ffffff; 
+            --chat-bubble-bot: #16201b;
+            --chat-border: #2d3d35;
+            --glow-color: rgba(142, 191, 165, 0.4);
+            --glow-color-zero: rgba(142, 191, 165, 0);
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 8vw;
+            background: var(--nav-bg);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-main); margin-right: 30px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-color); }
+        
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .theme-btn:hover { background: var(--border-color); }
+        #themeIcon { transition: transform 0.5s ease; font-size: 1.2rem; line-height: 1; }
+
+        .qa-container {
+            background: var(--nav-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            margin-top: 80px;
+        }
+
+        .progress-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .question-box {
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 30px;
+            background: transparent;
+            color: var(--text-main);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #006064;
+            transform: translateY(-2px);
+        }
+
+        /* Floating Global Help Button */
+        .global-help-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, background-color 0.3s;
+            z-index: 900;
+            border: none;
+        }
+
+        .global-help-btn:hover {
+            transform: scale(1.1);
+            background-color: #006064;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .success-message {
+            display: none;
+            color: var(--primary-color);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: var(--nav-bg); 
+            padding: 40px; 
+            border-radius: 15px; 
+            text-align: center;
+            border: 1px solid var(--border-color);
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-content button { margin: 10px; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            min-width: 5%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+        }
+
+        /* Mobile Fixes */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                padding: 15px 5vw;
+                position: relative !important;
+                gap: 15px;
+            }
+            .qa-container { margin-top: 20px !important; width: 90%; }
+            .nav-links a { margin-right: 15px; font-size: 0.95rem; }
+            .global-help-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGViZmE1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTExIDIwQTcgNyAwIDAgMSA5LjggNi4xQzE1LjUgNSAxNyA0LjQ4IDE5IDJjMSAyIDIgNC4xOCAyIDggMCA1LjUtNC43OCAxMC0xMCAxMFoiPjwvcGF0aD48cGF0aCBkPSJNMiAyMWMwLTMgMS44NS01LjM2IDUuMDgtNkM5LjUgMTQuNTIgMTIgMTMgMTMgMTIiPjwvcGF0aD48L3N2Zz4=">
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            DermaCare.
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-btn" title="Toggle Theme"><span id="themeIcon">☀️</span></button>
+        </div>
+    </nav>
+
+    <div class="qa-container" style="opacity: 0; animation: fadeUp 0.6s ease-out forwards;">
+        <div id="quiz-area">
+            <div class="progress-text" id="progress">Question 1</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            
+            <div class="question-box">
+                <div id="question-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 25px; animation: fadeIn 0.5s ease-in;">
+                    <h2 id="question-text" style="margin: 0;">Loading question...</h2>
+                    <svg id="help-icon" onclick="document.getElementById('help-modal').style.display='flex'" style="display: none; cursor: pointer; color: var(--primary-color);" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="How to determine skin type">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+            </div>
+
+            <button class="btn" id="next-btn">Next Question</button>
+        </div>
+
+        <div id="success-area" class="success-message">
+            <h2 style="color: var(--primary-color);">✨ All Done!</h2>
+            <p>Your personalized skin profile has been generated.</p>
+        </div>
+    </div>
+
+    <!-- Global Help Floating Button -->
+    <button class="global-help-btn" onclick="document.getElementById('global-info-modal').style.display='flex'" title="What is DermaCare?">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </button>
+
+    <!-- DB Check Modal -->
+    <div id="db-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top: 0; color: var(--primary-color);">Profile Found</h2>
+            <p>You have already completed the questionnaire.</p>
+            <div style="margin-top: 25px;">
+                <button class="btn" onclick="document.getElementById('db-modal').style.display='none'; initQuiz();">Retake Profile</button>
+                <button class="btn" onclick="window.location.href='/chat'" style="background-color: var(--text-muted);">Continue to Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal for Skin Type -->
+    <div id="help-modal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
+        <div class="modal-content" style="text-align: left;">
+            <h2 style="margin-top: 0; color: var(--primary-color);">Determining Your Skin Type</h2>
+            <ul style="color: var(--text-main); line-height: 1.7; padding-left: 20px; font-size: 1.05rem;">
+                <li style="margin-bottom: 8px;"><strong>Normal:</strong> Balanced, neither too oily nor too dry.</li>
+                <li style="margin-bottom: 8px;"><strong>Dry:</strong> Often feels tight, flaky, or rough.</li>
+                <li style="margin-bottom: 8px;"><strong>Oily:</strong> Shiny appearance, prone to breakouts and enlarged pores.</li>
+                <li style="margin-bottom: 8px;"><strong>Combination:</strong> Oily in the T-zone (forehead, nose, chin) but normal or dry on the cheeks.</li>
+                <li style="margin-bottom: 8px;"><strong>Sensitive:</strong> Prone to redness, itching, burning, or easily irritated.</li>
+            </ul>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="document.getElementById('help-modal').style.display='none'">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global App Info Modal -->
+    <div id="global-info-modal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
+        <div class="modal-content" style="text-align: left; max-width: 600px;">
+            <h2 style="margin-top: 0; color: var(--primary-color);">Welcome to DermaCare</h2>
+            <p style="color: var(--text-main); line-height: 1.6; font-size: 1.05rem;">Your intelligent skincare assistant that analyzes product ingredients, detects harmful interactions, and provides personalized recommendations.</p>
+            
+            <h3 style="color: var(--primary-color); margin-top: 25px; margin-bottom: 10px;">How it Works</h3>
+            <ul style="color: var(--text-muted); line-height: 1.6; padding-left: 20px;">
+                <li style="margin-bottom: 10px;"><strong style="color: var(--text-main);">Routine Analysis:</strong> Upload up to 5 everyday products to your persistent sidebar so the AI remembers your daily regimen.</li>
+                <li style="margin-bottom: 10px;"><strong style="color: var(--text-main);">One-Off Queries:</strong> Attach up to 3 images directly in the chat to quickly check compatibility before buying a new product.</li>
+                <li><strong style="color: var(--text-main);">Smart Detection:</strong> The dual Vision and Chemistry agents analyze over 6,200 ingredients to warn you about 113+ documented ingredient conflicts and synergies.</li>
+            </ul>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="document.getElementById('global-info-modal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const icon = document.getElementById('themeIcon');
+            
+            icon.style.transform = 'rotate(180deg) scale(0)';
+            
+            setTimeout(() => {
+                document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                icon.textContent = isDark ? '🌙' : '☀️';
+                icon.style.transform = 'rotate(360deg) scale(1)';
+            }, 250);
+            
+            setTimeout(() => {
+                icon.style.transition = 'none';
+                icon.style.transform = 'rotate(0deg) scale(1)';
+                void icon.offsetWidth;
+                icon.style.transition = 'transform 0.5s ease';
+            }, 500);
+        }
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.textContent = '☀️';
+        } else {
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.textContent = '🌙';
+        }
+
+        const fixedQuestions = [
+            "What is your primary skin concern right now?",
+            "How would you describe your skin type (e.g., oily, dry, combo)?",
+            "What does your current daily skincare routine look like?"
+        ];
+
+        let currentQuestionIndex = 0;
+        let userData = {};
+
+        const questionTextElement = document.getElementById('question-text');
+        const questionWrapper = document.getElementById('question-wrapper');
+        const answerInput = document.getElementById('answer-input');
+        const nextBtn = document.getElementById('next-btn');
+        const progressText = document.getElementById('progress');
+        const quizArea = document.getElementById('quiz-area');
+        const successArea = document.getElementById('success-area');
+        const helpIcon = document.getElementById('help-icon');
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/check-db');
+                const data = await res.json();
+                if (data.hasAnswers) {
+                    document.getElementById('db-modal').style.display = 'flex';
+                } else {
+                    initQuiz();
+                }
+            } catch (err) {
+                initQuiz(); 
+            }
+        });
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            userData = {};
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            progressText.innerText = `Question ${currentQuestionIndex + 1} of ${fixedQuestions.length}`;
+            const progressFill = document.getElementById('progress-fill');
+            if (progressFill) {
+                progressFill.style.width = `${(currentQuestionIndex / fixedQuestions.length) * 100}%`;
+            }
+            
+            questionTextElement.innerText = fixedQuestions[currentQuestionIndex];
+            
+            if (currentQuestionIndex === 1) {
+                helpIcon.style.display = 'inline-block';
+            } else {
+                helpIcon.style.display = 'none';
+            }
+
+            answerInput.value = '';
+            answerInput.focus();
+
+            if (currentQuestionIndex === fixedQuestions.length - 1) {
+                nextBtn.innerText = "Finish & Save Profile";
+            } else {
+                nextBtn.innerText = "Next Question";
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            const answer = answerInput.value.trim();
+            if (answer === '') {
+                alert("Please provide an answer before continuing.");
+                return;
+            }
+
+            userData[fixedQuestions[currentQuestionIndex]] = answer;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < fixedQuestions.length) {
+                questionWrapper.style.animation = 'none';
+                setTimeout(() => {
+                    questionWrapper.style.animation = 'fadeIn 0.5s ease-in';
+                    loadQuestion();
+                }, 10);
+            } else {
+                finishQuiz();
+            }
+        });
+
+        answerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+
+        function finishQuiz() {
+            quizArea.style.display = 'none';
+            successArea.style.display = 'block';
+
+            const finalDatabaseEntry = {
+                timestamp: new Date().toISOString(),
+                patientAnswers: userData
+            };
+
+            fetch('/save-answers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(finalDatabaseEntry)
+            })
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = "/chat"; 
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>

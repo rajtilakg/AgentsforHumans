@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Product | DermaCare</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGViZmE1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTExIDIwQTcgNyAwIDAgMSA5LjggNi4xQzE1LjUgNSAxNyA0LjQ4IDE5IDJjMSAyIDIgNC4xOCAyIDggMCA1LjUtNC43OCAxMC0xMCAxMFoiPjwvcGF0aD48cGF0aCBkPSJNMiAyMWMwLTMgMS44NS01LjM2IDUuMDgtNkM5LjUgMTQuNTIgMTIgMTMgMTMgMTIiPjwvcGF0aD48L3N2Zz4=">
+    <style>
+        :root {
+            --primary-color: #2c4c3b;
+            --primary-light: #eef5f0;
+            --primary-text-on-btn: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #fbfdfc;
+            --nav-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --chat-bubble-user: #e3f0e8;
+            --chat-text-user: #1f3b2b; 
+            --chat-bubble-bot: #ffffff;
+            --chat-border: #e2e8f0;
+            --glow-color: rgba(44, 76, 59, 0.4);
+            --glow-color-zero: rgba(44, 76, 59, 0);
+            --preview-bg: #eaf2ed;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #8ebfa5;
+            --primary-light: #1a2e24;
+            --primary-text-on-btn: #111814;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-color: #111814;
+            --nav-bg: #16201b; 
+            --card-bg: #16201b;
+            --border-color: #2d3d35;
+            --chat-bubble-user: #1e362a;
+            --chat-text-user: #ffffff; 
+            --chat-bubble-bot: #16201b;
+            --chat-border: #2d3d35;
+            --glow-color: rgba(142, 191, 165, 0.4);
+            --glow-color-zero: rgba(142, 191, 165, 0);
+            --preview-bg: #1c2f25;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        @media (min-width: 769px) {
+            body { overflow: hidden; }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 8vw;
+            background: var(--nav-bg);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-content {
+            width: 100%;
+            max-width: 1400px;
+            height: calc(100vh - 85px);
+            margin-top: 85px;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+        }
+        
+        .chat-area {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            background: var(--nav-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .routine-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--nav-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            min-width: 250px;
+        }
+
+        h2 { margin-top: 0; color: var(--text-main); font-size: 1.5rem; margin-bottom: 6px; text-align: center;}
+        .subtitle { margin: 0 0 15px; color: var(--text-muted); font-size: 0.9rem; text-align: center;}
+
+        #chat-log {
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+        
+        .msg-container { display: flex; gap: 15px; width: 100%; align-items: flex-start; }
+        .msg-container.user { flex-direction: row-reverse; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .bot-avatar { background: var(--border-color); color: var(--text-main); } 
+        .user-avatar { background: var(--primary-color); color: #fff; }
+        
+        .msg { 
+            background: var(--chat-bubble-bot); border: 1px solid var(--chat-border);
+            padding: 14px 18px; border-radius: 12px; max-width: 80%; line-height: 1.5;
+        }
+        .msg-container.user .msg { background: var(--chat-bubble-user); color: var(--chat-text-user); border: none; }
+        
+        .msg-content { word-wrap: break-word; overflow-wrap: break-word; }
+        .msg-content pre { white-space: pre-wrap; overflow-x: hidden; }
+        .msg-content p { margin: 0 0 8px 0; line-height: 1.4; font-size: 0.93rem; }
+        .msg-content p:last-child { margin-bottom: 0; }
+        .msg-content ul, .msg-content ol { margin: 0 0 10px 20px; padding: 0; font-size: 0.93rem; line-height: 1.4; }
+        .msg-content li { margin-bottom: 4px; }
+        .msg-content h1, .msg-content h2, .msg-content h3, .msg-content h4 { margin: 12px 0 6px 0; font-size: 1.05rem; color: var(--text-main); }
+        .msg-content h1:first-child, .msg-content h2:first-child, .msg-content h3:first-child { margin-top: 0; }
+        .msg-content strong { color: var(--primary-color); }
+
+        /* Themed Thinking / Collapsible Block */
+        .msg-content details {
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--preview-bg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .msg-content summary {
+            padding: 12px 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+            list-style: none;
+            outline: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+        .msg-content summary::-webkit-details-marker { display: none; }
+        .msg-content summary::before {
+            content: '▶';
+            display: inline-block;
+            font-size: 0.8rem;
+            margin-right: 10px;
+            transition: transform 0.2s ease;
+        }
+        .msg-content details[open] summary::before { transform: rotate(90deg); }
+        .msg-content details > div {
+            padding: 0 15px 15px 15px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px dashed var(--border-color);
+            margin-top: 5px;
+            padding-top: 15px;
+        }
+
+        .search-bar {
+            display: flex; align-items: center; background: var(--nav-bg);
+            border: 2px solid var(--chat-border); border-radius: 50px;
+            padding: 5px 15px; transition: border-color 0.3s; flex-shrink: 0; width: 100%; box-sizing: border-box;
+        }
+        .search-bar:focus-within { border-color: var(--primary-color); }
+        input[type="text"] {
+            border: none; outline: none; flex-grow: 1; min-width: 0;
+            font-size: 1.1rem; padding: 15px 10px; background: transparent; color: var(--text-main);
+        }
+        .icon-btn {
+            background: none; border: none; cursor: pointer; color: var(--text-main);
+            display: flex; align-items: center; justify-content: center; padding: 10px;
+            border-radius: 50%; transition: color 0.3s;
+        }
+        .icon-btn:hover { color: var(--primary-color); }
+        #camera-input { display: none; }
+        
+        #inline-preview-stack {
+            display: flex; gap: 12px; overflow-x: auto; margin: 0 0 15px 0; width: 100%;
+            background: var(--preview-bg); padding: 15px 20px; border-radius: 20px;
+            border: 1px solid var(--border-color); z-index: 10; flex-shrink: 0; align-items: center;
+        }
+        #inline-preview-stack:empty { display: none; }
+        
+        .sidebar-product {
+            display: flex; align-items: center; justify-content: space-between; padding: 8px;
+            border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-color); margin-bottom: 10px;
+        }
+
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-main); margin-left: 30px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-color); }
+        .theme-btn {
+            display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+            border-radius: 50%; background: transparent; border: 1px solid var(--border-color);
+            cursor: pointer; margin-left: 20px; color: var(--text-main); transition: all 0.3s ease; outline: none;
+        }
+        .theme-btn:hover { background: var(--border-color); }
+        #themeIcon { transition: transform 0.5s ease; font-size: 1.2rem; line-height: 1; }
+
+        @media (max-width: 768px) {
+            nav { flex-direction: column; padding: 15px 5vw; position: relative !important; gap: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; margin-top: 10px; }
+            .nav-links a { margin-left: 0 !important; font-size: 0.95rem; }
+            .theme-btn { margin-left: 0 !important; }
+            body { height: auto; overflow-x: hidden; }
+            .page-content { flex-direction: column-reverse; padding: 10px; height: auto !important; min-height: 100vh; }
+            .chat-area, .routine-sidebar { flex: none; width: 100%; min-width: 0; }
+            .routine-sidebar { max-height: 450px; }
+        }
+
+        .retake-btn {
+            background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .retake-btn:hover { background: var(--primary-color); color: var(--primary-text-on-btn); }
+        .context-btn { background: var(--primary-color); color: #ffffff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s; }
+        .context-btn:hover { opacity: 0.8; }
+        
+        @keyframes rollDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+    
+        /* Help Popup Styles */
+        .help-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%;
+            background: var(--primary-color); color: var(--primary-text-on-btn); border: none; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;
+            font-size: 28px; z-index: 999; transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .help-btn:hover { transform: scale(1.1); box-shadow: 0 6px 25px rgba(0,0,0,0.25); }
+        
+        .help-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000; animation: fadeIn 0.3s ease;
+        }
+        
+        .help-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--nav-bg); border: 2px solid var(--border-color); border-radius: 20px;
+            width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3); z-index: 1001; animation: slideUp 0.4s ease;
+        }
+        
+        .help-header {
+            background: var(--primary-color); color: var(--primary-text-on-btn); padding: 25px 30px;
+            border-radius: 18px 18px 0 0; display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .help-header h2 { margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 12px; }
+        
+        .help-close {
+            background: transparent; border: none; color: var(--primary-text-on-btn); font-size: 32px;
+            cursor: pointer; line-height: 1; padding: 0; width: 40px; height: 40px; display: flex;
+            align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s;
+        }
+        .help-close:hover { background: rgba(255,255,255,0.2); }
+        
+        .help-content { padding: 30px; }
+        .help-section { margin-bottom: 30px; }
+        .help-section h3 { color: var(--primary-color); font-size: 1.3rem; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; }
+        
+        .help-feature {
+            background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 18px; margin-bottom: 15px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .help-feature:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .help-feature-title { font-weight: 600; color: var(--text-main); margin-bottom: 8px; font-size: 1.05rem; }
+        .help-feature-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+        .help-icon { font-size: 1.5rem; }
+        
+        .help-tip { background: var(--primary-light); border-left: 4px solid var(--primary-color); padding: 15px 20px; border-radius: 8px; margin-top: 20px; }
+        .help-tip strong { color: var(--primary-color); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        
+        @media (max-width: 768px) {
+            .help-popup { width: 95%; max-height: 90vh; }
+            .help-content { padding: 20px; }
+            .help-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 24px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo" style="display: flex; align-items: center; text-decoration: none;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+            DermaCare.
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/treatments">Skin Goals</a>
+            <a href="/about">About Us</a>
+            <a href="/logout">Logout</a>
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-btn" title="Toggle Theme"><span id="themeIcon">☀️</span></button>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <!-- CHAT AREA (LEFT) -->
+        <div class="chat-area" style="opacity: 0; animation: rollDown 0.6s ease-out forwards;">
+            <h2 style="margin-top: 0; color: var(--primary-color); font-size: 1.5rem; margin-bottom: 6px; text-align: center;">Find Your Product</h2>
+            <p style="margin: 0 0 15px; color: var(--text-muted); font-size: 0.9rem; text-align: center;">Search, snap a photo, or just ask — your AI skincare assistant is right here.</p>
+
+            <div id="chat-log"></div>
+            
+            <div id="inline-preview-stack"></div>
+
+            <div class="search-bar">
+                <button class="icon-btn" id="send-btn" onclick="sendMessage()" title="Send">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+                <input type="text" id="chat-input" placeholder="Message DermaCare..." autocomplete="off">
+                <label for="camera-input" class="icon-btn" title="Attach Image for this query">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                </label>
+                <input type="file" id="camera-input" accept="image/*" multiple style="display:none;">
+            </div>
+        </div>
+
+        <!-- ROUTINE SIDEBAR (RIGHT) -->
+        <div class="routine-sidebar" style="opacity: 0; animation: rollDown 0.6s ease-out 0.6s forwards;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <h3 style="margin: 0; color: var(--primary-color); font-size: 1.2rem;">My Routine</h3>
+                <button onclick="window.location.href='/qa'" class="retake-btn" title="Update your skin profile">Retake Profile</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">Upload up to 5 products. The AI will remember these across all your chats.</p>
+            
+            <div id="routine-stack" style="display: flex; flex-direction: column; flex-grow: 1; overflow-y: auto;">
+                <!-- Populated by JS -->
+            </div>
+            
+            <label for="routine-upload-input" style="text-align: center; margin-top: auto; margin-bottom: 10px; padding: 12px; font-size: 0.95rem; cursor: pointer; display: block; background: var(--primary-color); color: var(--primary-text-on-btn); border-radius: 50px; font-weight: 600; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" id="routine-upload-label">
+                Add to Routine
+            </label>
+            <input type="file" id="routine-upload-input" accept="image/*" style="display: none;">
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center;" onclick="closeLightbox()">
+        <span style="position: absolute; top: 20px; right: 30px; color: var(--chat-text-user); font-size: 40px; cursor: pointer;">&times;</span>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    </div>
+
+    <!-- Help Button -->
+    <button class="help-btn" onclick="openHelp()" title="Need help?">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </button>
+
+    <!-- Help Overlay & Popup -->
+    <div class="help-overlay" id="helpOverlay" onclick="closeHelp()">
+        <div class="help-popup" onclick="event.stopPropagation()">
+            <div class="help-header">
+                <h2>
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                    </svg>
+                    How to Use DermaCare
+                </h2>
+                <button class="help-close" onclick="closeHelp()">&times;</button>
+            </div>
+            
+            <div class="help-content">
+                <div class="help-section">
+                    <h3><span class="help-icon">🚀</span> Getting Started</h3>
+                    <div class="help-feature">
+                        <div class="help-feature-title">1. Build Your Routine (Sidebar →)</div>
+                        <div class="help-feature-desc">Upload photos of up to 5 products from your daily skincare routine. Click "Add to Routine" and snap/upload pictures of your product ingredient labels. The AI will extract and remember all ingredients permanently.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">2. Add Context (Optional)</div>
+                        <div class="help-feature-desc">Click "Context" on any product to add notes like "Use 2x/week" or "Morning only". This helps the AI give more personalized advice.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">3. Chat with Your AI Expert</div>
+                        <div class="help-feature-desc">Ask anything! "Is my routine good?", "Any ingredient conflicts?", "What should I add for acne?". The AI analyzes your entire routine using a database of 6,222+ ingredients.</div>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3><span class="help-icon">✨</span> Key Features</h3>
+                    <div class="help-feature">
+                        <div class="help-feature-title">🔬 Ingredient Analysis</div>
+                        <div class="help-feature-desc">Every ingredient is analyzed for potency, timing (AM/PM), skin barrier impact, and sun sensitivity. Get detailed breakdowns of actives vs supporting ingredients.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">⚠️ Conflict Detection</div>
+                        <div class="help-feature-desc">The AI checks 113+ documented ingredient interactions. It warns you if retinol conflicts with AHAs, or if you're over-exfoliating your skin barrier.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">💡 Smart Recommendations</div>
+                        <div class="help-feature-desc">Get personalized product suggestions from 2,269 real products. Tell the AI your budget, skin concerns, and climate—it filters results just for you.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">📸 One-Off Product Checks</div>
+                        <div class="help-feature-desc">Thinking of buying something new? Click the camera icon in the chat, attach up to 3 images, and ask "Will this work with my routine?" Get instant compatibility analysis.</div>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3><span class="help-icon">💡</span> Pro Tips</h3>
+                    <div class="help-feature">
+                        <div class="help-feature-title">📷 Take Clear Photos</div>
+                        <div class="help-feature-desc">Make sure ingredient labels are readable and well-lit. The AI uses advanced vision tech, but clearer photos = better accuracy.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">🎯 Be Specific with Questions</div>
+                        <div class="help-feature-desc">Instead of "Is this good?", try "I have oily skin in humid weather—will this clog my pores?" More context = better answers.</div>
+                    </div>
+                    <div class="help-feature">
+                        <div class="help-feature-title">🔄 Update Your Profile</div>
+                        <div class="help-feature-desc">Click "Retake Profile" in the sidebar if your skin type or concerns change. The AI adapts all future recommendations to your current needs.</div>
+                    </div>
+                </div>
+
+                <div class="help-tip">
+                    <strong>📋 Important:</strong> DermaCare is for cosmetic skincare education only. We don't diagnose medical conditions or prescribe treatments. For persistent skin issues, always consult a dermatologist.
+                </div>
+                <div class="help-tip" style="margin-top: 15px; border-left-color: #3b82f6;">
+                    <strong>⏱️ Rate Limits:</strong> To ensure quality for everyone, you can send 10 messages per minute and 400 per day. Upload up to 20 images per minute. These limits are very generous for thorough testing!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const icon = document.getElementById('themeIcon');
+            
+            icon.style.transform = 'rotate(180deg) scale(0)';
+            setTimeout(() => {
+                document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
+                icon.textContent = isDark ? '🌙' : '☀️';
+                icon.style.transform = 'rotate(360deg) scale(1)';
+            }, 250);
+            
+            setTimeout(() => {
+                icon.style.transition = 'none';
+                icon.style.transform = 'rotate(0deg) scale(1)';
+                void icon.offsetWidth;
+                icon.style.transition = 'transform 0.5s ease';
+            }, 500);
+        }
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.textContent = '☀️';
+        }
+
+        const chatInput = document.getElementById('chat-input');
+        const cameraInput = document.getElementById('camera-input');
+        const routineUploadInput = document.getElementById('routine-upload-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatLog = document.getElementById('chat-log');
+        const routineStack = document.getElementById('routine-stack');
+        const inlinePreviewStack = document.getElementById('inline-preview-stack');
+        const routineUploadLabel = document.getElementById('routine-upload-label');
+        
+        let mediaStream = null;
+        let history = JSON.parse(sessionStorage.getItem('dermaCareHistory')) || [];
+        let transientImageKeys = [];
+        let transientImageUrls = [];
+        let productContexts = {};
+
+        // --- HELP POPUP LOGIC ---
+        function openHelp() {
+            document.getElementById('helpOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeHelp() {
+            document.getElementById('helpOverlay').style.display = 'none';
+            document.body.style.overflow = ''; 
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeHelp();
+        });
+
+        // --- CONTEXT LOGIC ---
+        function toggleContext(idx) {
+            const box = document.getElementById(`context-box-${idx}`);
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function saveContext(key, idx) {
+            const text = document.getElementById(`ctx-text-${idx}`).value.trim();
+            const time = document.querySelector(`input[name="time-${idx}"]:checked`).value;
+            const btn = document.getElementById(`save-btn-${idx}`);
+            
+            btn.textContent = "Saving...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/save-context', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageKey: key, text, time })
+                });
+                if (res.ok) {
+                    productContexts[key] = { text, time };
+                    toggleContext(idx);
+                } else {
+                    alert("Failed to save context.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to save context.");
+            }
+            btn.textContent = "Save";
+            btn.disabled = false;
+        }
+
+        // --- SIDEBAR ROUTINE LOGIC (Persistent S3/Dynamo) ---
+        async function loadUserImages() {
+            try {
+                const res = await fetch('/get-user-images');
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    if (data.images.length > 0) {
+                        productContexts = data.contexts || {};
+                        routineStack.innerHTML = data.images.map((imgData, idx) => {
+                            const ctx = productContexts[imgData.key] || { text: '', time: 'Both' };
+                            const amChecked = ctx.time === 'AM' ? 'checked' : '';
+                            const pmChecked = ctx.time === 'PM' ? 'checked' : '';
+                            const bothChecked = ctx.time === 'Both' ? 'checked' : '';
+                            
+                            return `
+                            <div class="sidebar-product" style="flex-direction: column; padding: 10px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+                                    <img src="${imgData.url}" onclick="openLightbox('${imgData.url}')" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">
+                                    <div style="flex-grow: 1; display: flex; justify-content: center;">
+                                        <button onclick="toggleContext(${idx})" class="context-btn" style="padding: 6px 16px; font-weight: 600; border-radius: 6px;">Context</button>
+                                    </div>
+                                    <button onclick="removeImage('${imgData.key}')" style="background: #d32f2f; color: #ffffff; border: none; border-radius: 6px; padding: 6px 12px; font-weight: 600; font-size: 0.8rem; cursor: pointer; flex-shrink: 0;">Remove</button>
+                                </div>
+                                <div id="context-box-${idx}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color); width: 100%;">
+                                    <textarea id="ctx-text-${idx}" rows="2" placeholder="e.g. 5% Niacinamide, use 2x/week" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-family: inherit; font-size: 0.85rem; resize: vertical; outline: none; margin-bottom: 10px;">${ctx.text}</textarea>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-main); font-weight: 500;">
+                                        <div style="display: flex; gap: 10px;">
+                                            <label style="cursor:pointer;"><input type="radio" name="time-${idx}" value="AM" ${amChecked}> AM</label>
+                                            <label style="cursor:pointer;"><input type="radio" name="time-${idx}" value="PM" ${pmChecked}> PM</label>
+                                            <label style="cursor:pointer;"><input type="radio" name="time-${idx}" value="Both" ${bothChecked}> Both</label>
+                                        </div>
+                                        <button id="save-btn-${idx}" onclick="saveContext('${imgData.key}', ${idx})" style="background: var(--primary-color); color: #fff; border: none; border-radius: 6px; padding: 6px 16px; font-weight: 600; font-size: 0.8rem; cursor: pointer;">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('');
+                    } else {
+                        routineStack.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 20px;">No products uploaded yet.</p>';
+                    }
+                    if (data.images.length >= 5) {
+                        routineUploadLabel.style.display = 'none';
+                    } else {
+                        routineUploadLabel.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load image stack", err);
+            }
+        }
+
+        async function removeImage(key) {
+            try {
+                await fetch('/remove-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageKey: key }) });
+                loadUserImages(); 
+            } catch (err) { console.error("Failed to remove image", err); }
+        }
+        
+        if (routineUploadInput) {
+            routineUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) { 
+                    uploadImageToServer(file, file.name); 
+                    event.target.value = ''; 
+                }
+            });
+        }
+
+        async function uploadImageToServer(fileOrBlob, filename = "capture.jpg") {
+            const currentImagesCount = document.querySelectorAll('.sidebar-product').length;
+            const formData = new FormData();
+            formData.append('image', fileOrBlob, filename);
+            
+            const uploadingContainer = appendMessage('bot', `📥 Uploading product to your permanent routine...`);
+            const uploadContent = uploadingContainer.querySelector('.msg-content');
+
+            // Optimistic UI
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const tempDiv = document.createElement('div');
+                tempDiv.className = 'sidebar-product uploading-preview';
+                tempDiv.style = 'flex-direction: column; padding: 10px; opacity: 0.6;';
+                tempDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+                        <img src="${e.target.result}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; filter: grayscale(100%);">
+                        <div style="flex-grow: 1; text-align: center; font-size: 0.85rem; font-weight: bold; color: var(--text-muted);">Syncing to Database...</div>
+                    </div>`;
+                if (routineStack.innerText.includes("No products uploaded yet")) {
+                    routineStack.innerHTML = '';
+                }
+                routineStack.appendChild(tempDiv);
+            };
+            reader.readAsDataURL(fileOrBlob);
+
+            try {
+                const res = await fetch('/upload-image', { method: 'POST', credentials: 'same-origin', body: formData });
+                if (!res.ok) throw new Error('Upload failed');
+                
+                uploadContent.innerHTML = marked.parse("✅ **Product saved to S3!** Waiting for cloud sync...");
+                scrollChatToBottom();
+
+                // Polling for Lambda Sync
+                let attempts = 0;
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    try {
+                        const checkRes = await fetch('/get-user-images');
+                        const checkData = await checkRes.json();
+                        
+                        if ((checkData.images && checkData.images.length > currentImagesCount) || attempts > 5) {
+                            clearInterval(pollInterval);
+                            await loadUserImages();
+                            
+                            const successText = "🌿 **Product added to your routine!** It will automatically be analyzed for all future questions.";
+                            uploadContent.innerHTML = marked.parse(successText);
+                            
+                            history.push({ role: 'bot', text: successText });
+                            sessionStorage.setItem('dermaCareHistory', JSON.stringify(history));
+                            scrollChatToBottom();
+                        }
+                    } catch (pollErr) { console.error("Polling error", pollErr); }
+                }, 2000); 
+
+            } catch (err) {
+                console.error("Upload error:", err);
+                uploadContent.innerHTML = marked.parse("❌ **Error uploading product.** Please check your session and try again.");
+                const preview = document.querySelector('.uploading-preview');
+                if(preview) preview.remove();
+                if(currentImagesCount === 0) {
+                    routineStack.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 20px;">No products uploaded yet.</p>';
+                }
+            }
+        }
+
+        // --- INLINE CHAT UPLOAD LOGIC (Transient Base64) ---
+        if (cameraInput) {
+            cameraInput.addEventListener('change', async function(event) {
+                const files = Array.from(event.target.files);
+                const currentValidCount = transientImageKeys.filter(k => k !== null).length;
+                
+                if (currentValidCount + files.length > 3) {
+                    alert("You can only attach up to 3 images per message.");
+                    cameraInput.value = '';
+                    return;
+                }
+                
+                setBusy(true);
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (transientImageKeys.filter(k => k !== null).length >= 3) break;
+                    
+                    const base64Thumb = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = new Image();
+                            img.onload = function() {
+                                const canvas = document.createElement('canvas');
+                                const MAX_WIDTH = 500;
+                                let width = img.width; let height = img.height;
+                                if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+                                canvas.width = width; canvas.height = height;
+                                const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                                resolve(canvas.toDataURL('image/jpeg', 0.6));
+                            };
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    const currentIdx = transientImageKeys.length;
+                    
+                    // Optimistic UI for transient images
+                    const previewDiv = document.createElement('div');
+                    previewDiv.style.position = 'relative'; previewDiv.style.display = 'inline-block';
+                    previewDiv.id = `transient-preview-${currentIdx}`;
+                    previewDiv.innerHTML = `
+                        <img id="transient-img-${currentIdx}" src="${base64Thumb}" style="height: 60px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1); filter: grayscale(100%); opacity: 0.5;">
+                        <div id="transient-loader-${currentIdx}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; color: var(--text-main); font-weight: bold; background: var(--bg-color); padding: 2px 6px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Uploading...</div>
+                        <button id="transient-close-${currentIdx}" onclick="removeTransientImage(${currentIdx})" style="position: absolute; top: -5px; right: -5px; background: #d32f2f; color: var(--chat-text-user); border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">&times;</button>
+                    `;
+                    document.getElementById('inline-preview-stack').appendChild(previewDiv);
+                    
+                    transientImageKeys.push(null); 
+                    transientImageUrls.push(base64Thumb);
+
+                    const formData = new FormData();
+                    formData.append('image', file, file.name);
+                    formData.append('type', 'transient');
+
+                    try {
+                        const res = await fetch('/upload-image', { method: 'POST', credentials: 'same-origin', body: formData });
+                        const data = await res.json();
+                        transientImageKeys[currentIdx] = data.key;
+                        
+                        document.getElementById(`transient-img-${currentIdx}`).style.filter = 'none';
+                        document.getElementById(`transient-img-${currentIdx}`).style.opacity = '1';
+                        document.getElementById(`transient-loader-${currentIdx}`).style.display = 'none';
+                        document.getElementById(`transient-close-${currentIdx}`).style.display = 'flex';
+                        
+                    } catch (err) { 
+                        console.error("Transient upload failed", err); 
+                        alert("Failed to attach image. Please check your connection."); 
+                        previewDiv.remove(); 
+                        transientImageKeys[currentIdx] = null;
+                        transientImageUrls[currentIdx] = null;
+                    }
+                }
+                setBusy(false); 
+                cameraInput.value = '';
+            });
+        }
+
+        function removeTransientImage(idx) {
+            transientImageKeys[idx] = null; transientImageUrls[idx] = null;
+            const el = document.getElementById(`transient-preview-${idx}`);
+            if(el) el.remove();
+        }
+
+        function clearTransientImages() {
+            transientImageKeys = []; transientImageUrls = [];
+            document.getElementById('inline-preview-stack').innerHTML = '';
+        }
+
+        // --- CHAT LOGIC ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadUserImages();
+            if (history.length > 0) {
+                history.forEach(msg => { appendMessage(msg.role, msg.text, msg.imageUrls || msg.imageUrl); });
+            } else {
+                appendMessage('bot', "Hi! Upload your daily products to the sidebar, or attach up to 3 photos here to ask me a quick question.");
+            }
+        });
+
+        function scrollChatToBottom() { chatLog.scrollTop = chatLog.scrollHeight; }
+
+        // Markdown / Thinking Tags Parser
+        function processThinkingTags(text) {
+            if (!text) return text;
+            
+            const hrRegex = /\n\s*(?:---|___|\*\*\*)\s*\n/;
+            const match = text.match(hrRegex);
+            
+            if (match) {
+                const thoughts = text.slice(0, match.index);
+                const response = text.slice(match.index + match[0].length);
+                let innerHtml = marked.parse(thoughts.trim());
+                return `<details class="thinking-block"><summary>🤖  View Agent Thinking Process</summary><div>${innerHtml}</div></details>\n\n` + response;
+            } else {
+                if (text.trim().match(/^(📥|🔍|👁️|✅|💾|🔬|✨|⚠️)/)) {
+                    let innerHtml = marked.parse(text.trim());
+                    return `<details class="thinking-block" open><summary>🤖  Agent is thinking...</summary><div>${innerHtml}</div></details>`;
+                }
+                return text;
+            }
+        }
+
+        function appendMessage(role, text, imageUrls = null) {
+            const container = document.createElement('div');
+            container.className = `msg-container ${role}`;
+            
+            const botIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`;
+            const userIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+            
+            const avatarSymbol = role === 'bot' ? botIcon : userIcon;
+            const avatarClass = role === 'bot' ? 'bot-avatar' : 'user-avatar';
+            
+            let imagesHtml = '';
+            if (typeof imageUrls === 'string' && imageUrls.trim() !== '') { imageUrls = [imageUrls]; }
+            if (Array.isArray(imageUrls) && imageUrls.length > 0) {
+                imagesHtml = '<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">' + 
+                             imageUrls.map(url => `<img src="${url}" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border-color); display: block;">`).join('') +
+                             '</div>';
+            }
+            
+            let displayHtml = text;
+            if (role === 'bot' && text) {
+                let processedText = processThinkingTags(text);
+                displayHtml = marked.parse(processedText);
+            }
+
+            container.innerHTML = `
+                <div class="avatar ${avatarClass}">${avatarSymbol}</div>
+                <div class="msg ${role}">
+                    <div class="msg-content">${imagesHtml}${displayHtml}</div>
+                </div>
+            `;
+            chatLog.appendChild(container);
+            scrollChatToBottom();
+            return container;
+        }
+
+        function setBusy(isBusy) { sendBtn.disabled = isBusy; chatInput.disabled = isBusy; }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            const validKeys = transientImageKeys.filter(k => k !== null);
+            const validUrls = transientImageUrls.filter(u => u !== null);
+            
+            if (!text && validKeys.length === 0) return;
+            
+            const displayMsg = text || "Please analyze these images.";
+            appendMessage('user', displayMsg, validUrls);
+            history.push({ role: 'user', text: displayMsg, imageUrls: validUrls });
+            sessionStorage.setItem('dermaCareHistory', JSON.stringify(history));
+            
+            chatInput.value = '';
+            setBusy(true);
+            clearTransientImages();
+
+            const botMsgContainer = appendMessage('bot', ''); 
+            const contentDiv = botMsgContainer.querySelector('.msg-content');
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text || "Please analyze these images.", history: history.map(h => ({ role: h.role, text: h.text })), inline_image_keys: validKeys }),
+                });
+                
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    fullText += decoder.decode(value, { stream: true });
+                    
+                    let processedText = processThinkingTags(fullText);
+                    contentDiv.innerHTML = marked.parse(processedText);
+                    scrollChatToBottom();
+                }
+                history.push({ role: 'bot', text: fullText });
+                sessionStorage.setItem('dermaCareHistory', JSON.stringify(history));
+            } catch (err) {
+                console.error('Chat request failed:', err);
+                contentDiv.innerHTML = "Could not reach the server. Please check your connection and try again.";
+            }
+            setBusy(false);
+            chatInput.focus();
+        }
+
+        chatInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendMessage(); });
+
+        function openLightbox(url) { document.getElementById('lightbox-img').src = url; document.getElementById('lightbox').style.display = 'flex'; }
+        function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; document.getElementById('lightbox-img').src = ''; }
+    </script>
+</body>
+</html>
